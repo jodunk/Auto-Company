@@ -14,7 +14,8 @@ export async function generateOGImage(
 ): Promise<Response> {
   const element = buildElement(params, watermark);
 
-  const response = new ImageResponse(element, {
+  // ponytail: workers-og ships VNode but ImageResponse ctor is typed ReactNode — runtime fine, types gap
+  const response = new ImageResponse(element as any, {
     width: OG_WIDTH,
     height: OG_HEIGHT,
   });
