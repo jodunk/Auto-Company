@@ -5,11 +5,12 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev",
+    "predeploy": "bash scripts/pre-deploy-checks.sh",
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "db:local": "wrangler d1 migrations apply snapog-db --local",
     "db:remote": "wrangler d1 migrations apply snapog-db",
-    "staging:deploy": "wrangler deploy --env staging"
+    "staging:deploy": "bash scripts/pre-deploy-checks.sh && wrangler deploy --env staging"
   },
   "dependencies": {
     "hono": "^4.6.0",

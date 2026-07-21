@@ -28,7 +28,7 @@ See `docs/devops/rapidapi-endpoint.md` for the ~20-line implementation (a siblin
 | **Category** | Images / Data / Developer Tools |
 | **Tags** | og-image, open-graph, social-cards, meta-image, twitter-card, satori, edge |
 | **Long description** | See block below. |
-| **Base URL** | `https://snapog.mixnosity.workers.dev` |
+| **Base URL** | `https://snapog.mixnology.workers.dev` |
 | **Auth model** | Custom header `X-RapidAPI-Proxy-Secret` (RapidAPI proxy injection) |
 
 ### Long description (paste)
@@ -61,7 +61,7 @@ Returns a 1200×630 PNG.
 
 **Example request:**
 ```
-GET https://snapog.mixnosity.workers.dev/v1/og?title=Meet%20Lumen%202.0&description=The%20fastest%20way%20to%20ship%20product%20updates&domain=lumen.app&tag=Launch&theme=dark
+GET https://snapog.mixnology.workers.dev/v1/og?title=Meet%20Lumen%202.0&description=The%20fastest%20way%20to%20ship%20product%20updates&domain=lumen.app&tag=Launch&theme=dark
 ```
 
 **Response:** `image/png`, `Cache-Control: public, max-age=86400, s-maxage=604800`, headers `X-Cache: HIT|MISS`.
@@ -95,7 +95,7 @@ RapidAPI takes ~10–20% rev share; payouts via their provider account.
 5. `wrangler secret put RAPIDAPI_PROXY_SECRET` on the SnapOG worker with that value (after the `/v1/og` endpoint ships).
 6. Add pricing tiers (table above).
 7. Submit for review (RapidAPI approves within ~1–3 days).
-8. Once live → `curl https://snapog.mixnosity.workers.dev/stats` and watch whether referrals arrive (we can add a `rapidapi` referrer bucket to `recordVisit` if we want attribution).
+8. Once live → `curl https://snapog.mixnology.workers.dev/stats` and watch whether referrals arrive (we can add a `rapidapi` referrer bucket to `recordVisit` if we want attribution).
 
 **Time:** ~1hr dashboard work, gated on steps 1 + 4 + 5 having operator credentials.
 

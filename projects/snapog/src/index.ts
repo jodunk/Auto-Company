@@ -249,8 +249,11 @@ app.get('/p', c => {
 });
 
 // ── PlaceholdOG — keyless, free, watermarked placeholder images ──────────────
-// ponytail: reuses renderOrCache with prefix='p'. NO recordVisit on image hits —
-// images are hot-linked, not page views; per-render D1 writes would drown analytics.
+// ponytail: reuses renderOrCache with prefix='p'. Render hits ARE counted via
+// recordVisit with a normalized path (/p/:dims | /p/:dims.svg) so /stats splits
+// embed renders from the /p landing view — without one visits row per dimension.
+// Ceiling: 1 D1 write per render; swap to CF Analytics Engine if hot-link volume
+// ever hits D1 daily write limits (i.e. the day embed distribution actually worked).
 // CFO cache-defense: W/H quantized to multiples of 10, clamped to [40,2000],
 // text capped at 60 chars — bounds combinatorial cache cardinality.
 function parseDims(raw: string): { w: number; h: number } | null {
@@ -287,6 +290,11 @@ app.get('/p/*', async c => {
     return c.json({ error: 'dims must be WxH (e.g. 600x400) or N (square)' }, 400);
   }
   const { w, h } = parsed;
+  // Count this render under a normalized bucket so /stats surfaces embed traffic
+  // separately from the /p landing page. Smoke UA filtered inside recordVisit.
+  c.executionCtx.waitUntil(
+    recordVisit(c.env.DB, isSvg ? '/p/:dims.svg' : '/p/:dims', c.req.raw)
+  );
   const q = c.req.query();
   const defaultText = `${w}×${h}`;
   const text = (q['text'] ?? '').trim().slice(0, 60) || defaultText;
