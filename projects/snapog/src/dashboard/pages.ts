@@ -497,7 +497,7 @@ export function landingPage(host: string): string {
       <div class="og-preview-wrap" style="margin-top:56px;">
         <div class="og-preview-label">1200 × 630 PNG — rendered live</div>
         <img
-          src="/demo-og"
+          src="/demo-og?v=imog"
           alt="Live OG image example"
           style="width:100%;border-radius:8px;"
         />
@@ -686,7 +686,7 @@ export function landingPage(host: string): string {
     path: '/',
     title: 'Imog — OG images at the edge',
     description: 'One API call. Instant PNG. Cached globally on Cloudflare CDN.',
-    image: `https://${host}/demo-og`,
+    image: `https://${host}/demo-og?v=imog`,
   });
   return layout('Generate OG images at the edge', body, head);
 }

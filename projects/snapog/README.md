@@ -1,6 +1,6 @@
 # Imog
 
-![Imog](https://snapog.mixnology.workers.dev/demo-og)
+![Imog](https://snapog.mixnology.workers.dev/demo-og?v=imog)
 
 Generate stunning Open Graph images via API — hosted on Cloudflare Workers, cached globally on R2, sub-100ms on cache hit.
 

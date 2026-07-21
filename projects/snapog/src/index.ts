@@ -180,7 +180,7 @@ const DEMO_PARAMS: OGParams = {
   template: 'default',
   theme: 'dark',
 };
-const DEMO_R2_KEY = 'demo/hero.png';
+const DEMO_R2_KEY = 'demo/hero-imog.png';
 
 app.get('/demo-og', async c => {
   const cached = await c.env.OG_CACHE.get(DEMO_R2_KEY);
