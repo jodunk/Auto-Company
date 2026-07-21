@@ -1128,20 +1128,24 @@ function presetQuery(p: Preset): string {
 export function galleryPage(host: string): string {
   const cards = GALLERY_PRESETS.map((p, i) => {
     const q = presetQuery(p);
+    const shareUrl = `https://${host}/play?${q}`;
     return `
-      <a class="gallery-card" href="/play?${q}" style="--i:${i}">
-        <div class="gallery-thumb">
-          <img loading="lazy" src="/preview?${q}" alt="${p.title}" />
-        </div>
-        <div class="gallery-body">
-          <div class="gallery-meta">
-            <span class="gallery-tag">${p.tag}</span>
-            <span class="gallery-spec">${p.template} · ${p.theme}</span>
+      <div class="gallery-cell" style="--i:${i}">
+        <a class="gallery-card" href="/play?${q}">
+          <div class="gallery-thumb">
+            <img loading="lazy" src="/preview?${q}" alt="${p.title}" />
           </div>
-          <div class="gallery-title">${p.title}</div>
-        </div>
-        <div class="gallery-cta">Open in playground →</div>
-      </a>`;
+          <div class="gallery-body">
+            <div class="gallery-meta">
+              <span class="gallery-tag">${p.tag}</span>
+              <span class="gallery-spec">${p.template} · ${p.theme}</span>
+            </div>
+            <div class="gallery-title">${p.title}</div>
+          </div>
+          <div class="gallery-cta">Open in playground →</div>
+        </a>
+        <button class="gallery-copy" type="button" data-url="${shareUrl}" aria-label="Copy share link for ${p.title}">Copy link</button>
+      </div>`;
   }).join('');
 
   const body = `
@@ -1166,21 +1170,53 @@ export function galleryPage(host: string): string {
     </div>
   </section>
 
+  <script>
+  (function () {
+    document.querySelectorAll('.gallery-copy').forEach(function (b) {
+      b.addEventListener('click', async function (e) {
+        e.preventDefault();
+        try { await navigator.clipboard.writeText(b.dataset.url); } catch (_) {}
+        var prev = b.textContent; b.textContent = 'Copied!'; b.classList.add('copied');
+        setTimeout(function () { b.textContent = prev; b.classList.remove('copied'); }, 1400);
+      });
+    });
+  })();
+  </script>
+
   ${footer()}`;
 
   // Scoped page CSS. Matches design tokens (amber/teal on dot-grid surface).
   const galleryCss = `<style>
     .gallery-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+    .gallery-cell {
+      position: relative;
+      opacity: 0; animation: gfade 0.5s ease forwards; animation-delay: calc(var(--i) * 55ms);
+    }
     .gallery-card {
-      position: relative; display: flex; flex-direction: column;
+      display: flex; flex-direction: column;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r-lg); overflow: hidden;
       text-decoration: none; color: var(--text-1);
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-      opacity: 0; animation: gfade 0.5s ease forwards; animation-delay: calc(var(--i) * 55ms);
     }
     .gallery-card:hover { transform: translateY(-4px); border-color: var(--accent-dim); box-shadow: 0 12px 40px -12px rgba(245,158,11,0.28); }
     .gallery-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    /* ponytail: hover-only copy button; secondary control so 40px not 44px. Bump to 44 if it becomes a primary CTA. */
+    .gallery-copy {
+      position: absolute; top: 12px; right: 12px;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 40px; padding: 0 14px; gap: 6px;
+      font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+      color: var(--text-1); background: rgba(10,12,20,0.72);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      border: 1px solid var(--border); border-radius: 100px; cursor: pointer;
+      opacity: 0; transform: translateY(-4px);
+      transition: opacity 0.18s ease, transform 0.18s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .gallery-cell:hover .gallery-copy, .gallery-cell:focus-within .gallery-copy { opacity: 1; transform: none; }
+    .gallery-copy:hover { background: var(--accent); color: #0a0c14; border-color: var(--accent); }
+    .gallery-copy.copied { background: var(--teal); color: #04121a; border-color: var(--teal); }
+    .gallery-copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .gallery-thumb { aspect-ratio: 1200 / 630; background: #000; overflow: hidden; }
     .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
     .gallery-card:hover .gallery-thumb img { transform: scale(1.03); }
@@ -1201,8 +1237,9 @@ export function galleryPage(host: string): string {
     .gallery-card:hover .gallery-cta, .gallery-card:focus-visible .gallery-cta { opacity: 1; transform: none; }
     @keyframes gfade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     @media (prefers-reduced-motion: reduce) {
-      .gallery-card { animation: none; opacity: 1; }
+      .gallery-cell { animation: none; opacity: 1; }
       .gallery-card:hover .gallery-thumb img { transform: none; }
+      .gallery-copy { transition: none; }
     }
   </style>`;
 
