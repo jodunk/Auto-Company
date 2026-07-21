@@ -1,12 +1,12 @@
-// SnapOG — OG image renderer
+// Imog — OG image renderer
 // Uses workers-og (Satori + resvg-wasm, CF Workers compatible)
 
 import { ImageResponse } from 'workers-og';
 import { buildElement } from './templates';
 import type { OGParams } from '../types';
 
-const OG_WIDTH = 1200;
-const OG_HEIGHT = 630;
+const DEFAULT_W = 1200;
+const DEFAULT_H = 630;
 
 export async function generateOGImage(
   params: OGParams,
@@ -14,10 +14,14 @@ export async function generateOGImage(
 ): Promise<Response> {
   const element = buildElement(params, watermark);
 
+  // PlaceholdOG passes w/h; existing SnapOG routes fall back to 1200×630.
+  const width = params.w ?? DEFAULT_W;
+  const height = params.h ?? DEFAULT_H;
+
   // ponytail: workers-og ships VNode but ImageResponse ctor is typed ReactNode — runtime fine, types gap
   const response = new ImageResponse(element as any, {
-    width: OG_WIDTH,
-    height: OG_HEIGHT,
+    width,
+    height,
   });
 
   return response;

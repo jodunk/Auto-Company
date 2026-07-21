@@ -1,4 +1,4 @@
-// SnapOG — Main Cloudflare Worker
+// Imog — Main Cloudflare Worker
 // Routes: GET /og (image gen), GET / (landing), GET/POST /register, GET /dashboard
 
 import { Hono } from 'hono';
@@ -103,7 +103,7 @@ async function renderOrCache(
   ctx: ExecutionContext,
   params: OGParams,
   watermark: boolean,
-  prefix: 'og' | 'preview'
+  prefix: 'og' | 'preview' | 'p'
 ): Promise<{ body: ArrayBuffer; hit: boolean }> {
   const cacheKey = await buildCacheKey(params, watermark);
   const r2Key = `${prefix}/${cacheKey}.png`;
@@ -229,6 +229,70 @@ app.get('/preview', async c => {
       : 'default') as OGParams['template'],
   };
   const { body, hit } = await renderOrCache(c.env.OG_CACHE, c.executionCtx, params, true, 'preview');
+  return new Response(body, {
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      'X-Cache': hit ? 'HIT' : 'MISS',
+    },
+  });
+});
+
+// ── PlaceholdOG — keyless, free, watermarked placeholder images ──────────────
+// ponytail: reuses renderOrCache with prefix='p'. NO recordVisit — images are
+// hot-linked, not page views; per-render D1 writes would drown real analytics.
+// CFO cache-defense: W/H quantized to multiples of 10, clamped to [40,2000],
+// text capped at 60 chars — bounds combinatorial cache cardinality.
+function parseDims(raw: string): { w: number; h: number } | null {
+  const m = raw.match(/^(\d+)[xX](\d+)$/);
+  let w: number, h: number;
+  if (m) {
+    w = parseInt(m[1], 10);
+    h = parseInt(m[2], 10);
+  } else if (/^\d+$/.test(raw)) {
+    w = h = parseInt(raw, 10);
+  } else {
+    return null;
+  }
+  // Quantize to multiple of 10, then clamp to [40, 2000].
+  const clamp = (n: number) => Math.max(40, Math.min(2000, Math.round(n / 10) * 10));
+  return { w: clamp(w), h: clamp(h) };
+}
+
+// Matches /p/600x400, /p/600x400/png, /p/600x400.png, /p/200 (square).
+app.get('/p/*', async c => {
+  const rest = c.req.path.replace(/^\/p\//, '');
+  const segments = rest.split('/');
+  const format = segments.length > 1 ? segments[1] : undefined;
+  if (format && format !== 'png') {
+    return c.json({ error: `format '${format}' not supported — MVP supports png only` }, 400);
+  }
+  // Strip optional .png suffix on :dims (e.g. /p/600x400.png) per CTO arch doc.
+  const dimsRaw = segments[0].replace(/\.png$/i, '');
+  const parsed = parseDims(dimsRaw);
+  if (!parsed) {
+    return c.json({ error: 'dims must be WxH (e.g. 600x400) or N (square)' }, 400);
+  }
+  const { w, h } = parsed;
+  const q = c.req.query();
+  const defaultText = `${w}×${h}`;
+  const text = (q['text'] ?? '').trim().slice(0, 60) || defaultText;
+  const params: OGParams = {
+    title: text, // ponytail: title is required by OGParams type; text is the canonical field.
+    template: 'placeholder',
+    w,
+    h,
+    text,
+    bg: (q['bg'] ?? '').trim() || undefined,
+    fg: (q['fg'] ?? '').trim() || undefined,
+  };
+  const { body, hit } = await renderOrCache(
+    c.env.OG_CACHE,
+    c.executionCtx,
+    params,
+    true,
+    'p'
+  );
   return new Response(body, {
     headers: {
       'Content-Type': 'image/png',

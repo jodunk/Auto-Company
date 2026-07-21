@@ -1,4 +1,4 @@
-// SnapOG — OG image element templates
+// Imog — OG image element templates
 // Returns plain objects compatible with workers-og / satori
 
 import type { OGParams } from '../types';
@@ -13,6 +13,95 @@ type VNode = {
     [key: string]: unknown;
   };
 };
+
+// Named-color map for the PlaceholdOG route. Unknown strings fall back to default.
+// ponytail: static literal map — append colors here, no abstraction needed.
+const NAMED_COLORS: Record<string, string> = {
+  indigo: '#6366F1',
+  slate: '#64748B',
+  emerald: '#10B981',
+  amber: '#F59E0B',
+  rose: '#F43F5E',
+  white: '#FFFFFF',
+  black: '#000000',
+  blue: '#3B82F6',
+};
+
+function resolveColor(raw: string | undefined, fallback: string): string {
+  if (!raw) return fallback;
+  const named = NAMED_COLORS[raw.toLowerCase()];
+  if (named) return named;
+  if (/^#[0-9a-f]{3,8}$/i.test(raw)) return raw;
+  return fallback;
+}
+
+// PlaceholdOG template — solid bg, centered text, bottom-right "PlaceholdOG" label.
+// ponytail: label baked into the template (standalone brand per critic condition #1)
+// rather than threaded via the post-render watermark path — shorter diff, and the
+// existing Footer() watermark string is the parent product's, not ours.
+function placeholderTemplate(params: OGParams, watermark: boolean): VNode {
+  const w = params.w ?? 1200;
+  const h = params.h ?? 630;
+  const text = params.text ?? params.title ?? `${w}×${h}`;
+  const bg = resolveColor(params.bg, '#0f172a');
+  const fg = resolveColor(params.fg, '#e2e8f0');
+  const minDim = Math.min(w, h);
+  const fontSize = Math.max(14, Math.round(minDim / 12));
+  const labelSize = Math.max(10, Math.round(fontSize / 3));
+  const pad = Math.max(8, Math.round(minDim / 40));
+  return {
+    type: 'div',
+    props: {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        backgroundColor: bg,
+        position: 'relative',
+        fontFamily: '"Noto Sans", sans-serif',
+        padding: `${pad}px`,
+      },
+      children: [
+        {
+          type: 'div',
+          props: {
+            style: {
+              fontSize: `${fontSize}px`,
+              color: fg,
+              fontWeight: '600',
+              textAlign: 'center',
+              letterSpacing: '-0.01em',
+              wordBreak: 'break-word',
+              maxWidth: '90%',
+            },
+            children: text,
+          },
+        },
+        ...(watermark
+          ? [{
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  bottom: `${pad}px`,
+                  right: `${pad}px`,
+                  fontSize: `${labelSize}px`,
+                  color: fg,
+                  opacity: '0.5',
+                  fontFamily: 'monospace',
+                  letterSpacing: '0.05em',
+                },
+                children: 'PlaceholdOG',
+              },
+            }]
+          : []),
+      ],
+    },
+  };
+}
 
 // Accent bar — left edge visual anchor
 function AccentBar(color: string): VNode {
@@ -123,7 +212,7 @@ function Footer(
                   opacity: '0.55',
                   letterSpacing: '0.06em',
                 },
-                children: 'SnapOG',
+                children: 'Imog',
               },
             }
           : { type: 'div', props: { style: { width: '1px' }, children: null } },
@@ -448,7 +537,7 @@ function articleTemplate(params: OGParams, watermark: boolean): VNode {
                         opacity: '0.5',
                         letterSpacing: '0.06em',
                       },
-                      children: 'SnapOG',
+                      children: 'Imog',
                     },
                   }
                 : { type: 'div', props: { style: { width: '1px' }, children: null } },
@@ -466,6 +555,8 @@ export function buildElement(params: OGParams, watermark: boolean): VNode {
       return blogTemplate(params, watermark);
     case 'article':
       return articleTemplate(params, watermark);
+    case 'placeholder':
+      return placeholderTemplate(params, watermark);
     default:
       return defaultTemplate(params, watermark);
   }

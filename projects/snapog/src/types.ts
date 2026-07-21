@@ -1,4 +1,4 @@
-// SnapOG — shared types
+// Imog — shared types
 
 export type Tier = 'free' | 'pro' | 'business';
 
@@ -25,10 +25,16 @@ export interface OGParams {
   title: string;
   description?: string;
   theme?: 'dark' | 'light';
-  template?: 'default' | 'blog' | 'article';
+  template?: 'default' | 'blog' | 'article' | 'placeholder';
   author?: string;
   domain?: string;
   tag?: string;
+  // PlaceholdOG-only fields (ignored by other templates)
+  w?: number;
+  h?: number;
+  text?: string;
+  bg?: string;
+  fg?: string;
 }
 
 export interface Env {
