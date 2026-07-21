@@ -329,10 +329,79 @@ const CSS = `
     font-family: var(--font-mono);
   }
 
+  /* Playground */
+  .play-hero { padding: 64px 0 28px; text-align: center; }
+  .play-hero h1 {
+    font-size: clamp(30px, 4vw, 46px); font-weight: 700;
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 14px;
+  }
+  .play-hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), #FCD34D);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .play-hero p { color: var(--text-2); max-width: 580px; margin: 0 auto; font-size: 16px; }
+  .play-layout {
+    display: grid; grid-template-columns: 5fr 7fr; gap: 28px;
+    align-items: start; padding-bottom: 80px;
+  }
+  .play-controls .card { padding: 24px; }
+  .play-field { margin-bottom: 16px; }
+  .play-field label {
+    display: block; font-family: var(--font-mono); font-size: 11px;
+    color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .play-field input, .play-field textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--r); font-family: var(--font-sans); font-size: 14px;
+    color: var(--text-1); padding: 10px 14px; outline: none;
+    transition: border-color 0.15s;
+  }
+  .play-field input:focus, .play-field textarea:focus { border-color: var(--accent); }
+  .play-field textarea { resize: vertical; min-height: 60px; font-family: var(--font-mono); font-size: 13px; }
+  .play-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .play-row .play-field { margin-bottom: 0; }
+  .seg {
+    display: flex; gap: 4px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: var(--r); padding: 4px;
+  }
+  .seg button {
+    flex: 1; background: transparent; border: none; color: var(--text-2);
+    font-family: var(--font-mono); font-size: 12px; padding: 8px 6px;
+    border-radius: 4px; cursor: pointer; transition: all 0.15s;
+    text-transform: capitalize;
+  }
+  .seg button:hover { color: var(--text-1); }
+  .seg button.active { background: var(--accent); color: #000; }
+  .preset-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .preset-chip {
+    font-family: var(--font-mono); font-size: 11px; color: var(--text-2);
+    background: var(--bg); border: 1px solid var(--border); border-radius: 100px;
+    padding: 6px 12px; cursor: pointer; transition: all 0.15s;
+  }
+  .preset-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .play-preview { position: sticky; top: 88px; }
+  .play-preview .og-preview-wrap { margin-top: 0; }
+  .url-box { margin-top: 16px; display: flex; gap: 8px; align-items: stretch; }
+  .url-box input {
+    flex: 1; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--r); font-family: var(--font-mono); font-size: 12px;
+    color: var(--text-2); padding: 10px 14px; outline: none;
+  }
+  .play-note {
+    font-size: 12px; color: var(--text-3); margin-top: 14px;
+    font-family: var(--font-mono);
+  }
+
   @media (max-width: 768px) {
     .pricing-grid { grid-template-columns: 1fr; }
     .features-grid { grid-template-columns: 1fr; }
     .dash-grid { grid-template-columns: 1fr; }
+    .play-layout { grid-template-columns: 1fr; }
+    .play-preview { position: static; }
+    .play-row { grid-template-columns: 1fr; }
     .hero h1 { font-size: 36px; }
   }
 `;
@@ -359,6 +428,7 @@ function nav(_activePath = '/'): string {
   <nav class="nav">
     <a class="nav-logo" href="/">Snap<span>OG</span></a>
     <div class="nav-links">
+      <a href="/play">Playground</a>
       <a href="/#how-it-works">Docs</a>
       <a href="/#pricing">Pricing</a>
       <a href="/register" class="btn btn-primary">Get API Key →</a>
@@ -774,6 +844,197 @@ export function dashboardPage(key: ApiKey, recentCount: number, host: string): s
   ${footer()}`;
 
   return layout('Dashboard', body);
+}
+
+export function playgroundPage(host: string): string {
+  const body = `
+  ${nav('/play')}
+
+  <section class="play-hero">
+    <div class="container-wide">
+      <div class="hero-eyebrow">Live Playground</div>
+      <h1>Design your OG image.<br/><em>Copy the URL. Ship it.</em></h1>
+      <p>No signup, no key. Tweak the fields and watch it render live at the edge. Share the link, or grab a free API key for production.</p>
+    </div>
+  </section>
+
+  <div class="container-wide">
+    <div class="play-layout">
+
+      <!-- Controls -->
+      <div class="play-controls">
+        <div class="card">
+          <div class="play-field">
+            <label>Presets</label>
+            <div class="preset-row">
+              <button type="button" class="preset-chip" data-preset="launch">⚡ Product launch</button>
+              <button type="button" class="preset-chip" data-preset="blog">✍️ Blog post</button>
+              <button type="button" class="preset-chip" data-preset="docs">📖 Docs</button>
+            </div>
+          </div>
+
+          <div class="play-field">
+            <label for="f-title">Title</label>
+            <textarea id="f-title" rows="2" maxlength="120" placeholder="Your headline"></textarea>
+          </div>
+
+          <div class="play-field">
+            <label for="f-desc">Description</label>
+            <input id="f-desc" type="text" maxlength="200" placeholder="Optional subtitle" />
+          </div>
+
+          <div class="play-row" style="margin-bottom:16px;">
+            <div class="play-field"><label for="f-domain">Domain</label><input id="f-domain" type="text" maxlength="100" placeholder="yoursite.com" /></div>
+            <div class="play-field"><label for="f-author">Author</label><input id="f-author" type="text" maxlength="80" placeholder="Jane Doe" /></div>
+            <div class="play-field"><label for="f-tag">Tag</label><input id="f-tag" type="text" maxlength="40" placeholder="Tutorial" /></div>
+          </div>
+
+          <div class="play-field" style="margin-bottom:16px;">
+            <label>Template</label>
+            <div class="seg" id="seg-template">
+              <button type="button" data-val="default" class="active">Default</button>
+              <button type="button" data-val="blog">Blog</button>
+              <button type="button" data-val="article">Article</button>
+            </div>
+          </div>
+
+          <div class="play-field">
+            <label>Theme</label>
+            <div class="seg" id="seg-theme">
+              <button type="button" data-val="dark" class="active">Dark</button>
+              <button type="button" data-val="light">Light</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="play-preview">
+        <div class="og-preview-wrap">
+          <div class="og-preview-label" id="cache-label">1200 × 630 — rendering…</div>
+          <img id="preview-img" alt="OG image preview" />
+        </div>
+
+        <div class="url-box">
+          <input id="share-url" type="text" readonly />
+          <button class="btn btn-primary" data-copy-share style="white-space:nowrap;">Copy</button>
+          <a class="btn btn-ghost" id="open-share" target="_blank" rel="noopener" style="white-space:nowrap;">Open</a>
+        </div>
+        <p class="play-note">Shareable playground link — anyone can open and edit this exact design.</p>
+
+        <div class="card" style="margin-top:20px;">
+          <p class="card-title">Use in production</p>
+          <div class="code-block" style="margin-top:0;">
+            <div class="code-block-header">
+              <div class="code-block-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+              <span class="code-block-lang">HTML meta tags</span>
+            </div>
+            <pre><span class="c-key">&lt;meta</span> <span class="c-val">property=</span><span class="c-str">"og:image"</span>
+      <span class="c-val">content=</span><span class="c-str">"https://${host}/og?title=...&amp;template=...&amp;key=YOUR_KEY"</span> <span class="c-key">/&gt;</span></pre>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <a href="/register" class="btn btn-primary">Get a free API key →</a>
+            <span class="play-note" style="margin:0;">100 images/mo · watermark on free tier</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  ${footer()}
+
+  <script>
+    (function () {
+      const PRESETS = {
+        launch: { title: 'Meet Lumen 2.0', description: 'The fastest way to ship beautiful product updates.', domain: 'lumen.app', author: 'Lumen Team', tag: 'Launch', template: 'default', theme: 'dark' },
+        blog:   { title: 'Why we rewrote our API in three weeks', description: 'Lessons from a clean-slate rewrite.', domain: 'indieblog.dev', author: 'Sam Builder', tag: 'Engineering', template: 'blog', theme: 'dark' },
+        docs:   { title: 'Getting Started with SnapOG', description: 'Generate your first OG image in 60 seconds.', domain: 'snapog.dev', author: '', tag: 'Docs', template: 'article', theme: 'light' },
+      };
+      const DEFAULTS = PRESETS.launch;
+
+      const $ = id => document.getElementById(id);
+      const img = $('preview-img');
+      const share = $('share-url');
+      const openBtn = $('open-share');
+      const label = $('cache-label');
+
+      // Prefill from URL query (shareable deep links), else defaults
+      const qs = new URLSearchParams(location.search);
+      const state = {
+        title: qs.get('title') ?? DEFAULTS.title,
+        description: qs.get('description') ?? DEFAULTS.description,
+        domain: qs.get('domain') ?? DEFAULTS.domain,
+        author: qs.get('author') ?? DEFAULTS.author,
+        tag: qs.get('tag') ?? DEFAULTS.tag,
+        template: qs.get('template') ?? DEFAULTS.template,
+        theme: qs.get('theme') ?? DEFAULTS.theme,
+      };
+
+      function syncInputs() {
+        $('f-title').value = state.title;
+        $('f-desc').value = state.description;
+        $('f-domain').value = state.domain;
+        $('f-author').value = state.author;
+        $('f-tag').value = state.tag;
+        document.querySelectorAll('#seg-template button').forEach(b => b.classList.toggle('active', b.dataset.val === state.template));
+        document.querySelectorAll('#seg-theme button').forEach(b => b.classList.toggle('active', b.dataset.val === state.theme));
+      }
+
+      function buildQuery() {
+        const p = new URLSearchParams();
+        p.set('title', state.title);
+        if (state.description) p.set('description', state.description);
+        if (state.domain) p.set('domain', state.domain);
+        if (state.author) p.set('author', state.author);
+        if (state.tag) p.set('tag', state.tag);
+        p.set('template', state.template);
+        p.set('theme', state.theme);
+        return p.toString();
+      }
+
+      let timer;
+      function render() {
+        const query = buildQuery();
+        const url = location.origin + '/play?' + query;
+        share.value = url;
+        openBtn.href = url;
+        label.textContent = '1200 × 630 — rendering…';
+        img.src = '/preview?' + query;
+        history.replaceState(null, '', '/play?' + query);
+      }
+      function schedule() { clearTimeout(timer); timer = setTimeout(render, 200); }
+
+      const map = { 'f-title': 'title', 'f-desc': 'description', 'f-domain': 'domain', 'f-author': 'author', 'f-tag': 'tag' };
+      Object.entries(map).forEach(([id, key]) => {
+        $(id).addEventListener('input', e => { state[key] = e.target.value; schedule(); });
+      });
+      document.querySelectorAll('#seg-template button').forEach(b => {
+        b.addEventListener('click', () => { state.template = b.dataset.val; syncInputs(); render(); });
+      });
+      document.querySelectorAll('#seg-theme button').forEach(b => {
+        b.addEventListener('click', () => { state.theme = b.dataset.val; syncInputs(); render(); });
+      });
+      document.querySelectorAll('.preset-chip').forEach(c => {
+        c.addEventListener('click', () => { Object.assign(state, PRESETS[c.dataset.preset]); syncInputs(); render(); });
+      });
+      img.addEventListener('load', () => { label.textContent = '1200 × 630 PNG — live'; });
+      img.addEventListener('error', () => { label.textContent = 'Preview failed — enter a title'; });
+
+      document.querySelectorAll('[data-copy-share]').forEach(b => {
+        b.addEventListener('click', () => {
+          navigator.clipboard.writeText(share.value);
+          const o = b.textContent; b.textContent = 'Copied!';
+          setTimeout(() => { b.textContent = o; }, 1500);
+        });
+      });
+
+      syncInputs();
+      render();
+    })();
+  </script>`;
+
+  return layout('Playground', body);
 }
 
 export function errorPage(code: number, message: string): string {

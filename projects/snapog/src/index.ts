@@ -9,6 +9,7 @@ import {
   keyCreatedPage,
   dashboardPage,
   errorPage,
+  playgroundPage,
 } from './dashboard/pages';
 import type { ApiKey, Env, OGParams, Tier } from './types';
 import { TIER_LIMITS } from './types';
@@ -93,12 +94,45 @@ async function recordUsage(
   ]);
 }
 
+// Render an OG image, serving from R2 cache on hit, storing on miss.
+// Shared by /og (keyed, usage-counted) and /preview (keyless playground).
+// ponytail: one render+cache path = one thing to fix; /og adds usage tracking on top.
+async function renderOrCache(
+  ogCache: R2Bucket,
+  ctx: ExecutionContext,
+  params: OGParams,
+  watermark: boolean,
+  prefix: 'og' | 'preview'
+): Promise<{ body: ArrayBuffer; hit: boolean }> {
+  const cacheKey = await buildCacheKey(params, watermark);
+  const r2Key = `${prefix}/${cacheKey}.png`;
+  const cached = await ogCache.get(r2Key);
+  if (cached) {
+    return { body: await cached.arrayBuffer(), hit: true };
+  }
+  const imageResponse = await generateOGImage(params, watermark);
+  const body = await imageResponse.arrayBuffer();
+  ctx.waitUntil(
+    ogCache.put(r2Key, body.slice(0), {
+      httpMetadata: { contentType: 'image/png' },
+      customMetadata: { template: params.template ?? 'default' },
+    })
+  );
+  return { body, hit: false };
+}
+
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
 // Landing page
 app.get('/', c => {
   const host = new URL(c.req.url).host;
   return htmlResponse(landingPage(host));
+});
+
+// Playground — keyless live preview; converts visitors to signups
+app.get('/play', c => {
+  const host = new URL(c.req.url).host;
+  return htmlResponse(playgroundPage(host));
 });
 
 // ── Demo image (keyless showcase for landing hero; not usage-counted, R2-cached) ─
@@ -137,6 +171,37 @@ app.get('/demo-og', async c => {
       'Content-Type': 'image/png',
       'Cache-Control': 'public, max-age=86400, s-maxage=604800',
       'X-Cache': 'MISS',
+    },
+  });
+});
+
+// ── Playground preview (keyless, watermarked, R2-cached) ──────────────────────
+// ponytail: same render+cache path as /og, no key, no usage counting. Abuse =
+// filling R2 with random-title PNGs — bounded by CF per-request CPU limits +
+// s-maxage. Add per-IP rate-limit only if combinatorial abuse is observed.
+app.get('/preview', async c => {
+  const q = c.req.query();
+  const title = (q['title'] ?? '').trim().slice(0, 120);
+  if (!title) {
+    return c.json({ error: 'title parameter is required' }, 400);
+  }
+  const params: OGParams = {
+    title,
+    description: (q['description'] ?? '').trim().slice(0, 200) || undefined,
+    domain: (q['domain'] ?? '').trim().slice(0, 100) || undefined,
+    author: (q['author'] ?? '').trim().slice(0, 80) || undefined,
+    tag: (q['tag'] ?? '').trim().slice(0, 40) || undefined,
+    theme: (q['theme'] === 'light' ? 'light' : 'dark') as 'dark' | 'light',
+    template: (['blog', 'article'].includes(q['template'] ?? '')
+      ? q['template']
+      : 'default') as OGParams['template'],
+  };
+  const { body, hit } = await renderOrCache(c.env.OG_CACHE, c.executionCtx, params, true, 'preview');
+  return new Response(body, {
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      'X-Cache': hit ? 'HIT' : 'MISS',
     },
   });
 });
@@ -190,47 +255,28 @@ app.get('/og', async c => {
   };
 
   const watermark = apiKey.tier === 'free';
-  const cacheKey = await buildCacheKey(params, watermark);
-  const r2Key = `og/${cacheKey}.png`;
+  const { body, hit } = await renderOrCache(
+    c.env.OG_CACHE,
+    c.executionCtx,
+    params,
+    watermark,
+    'og'
+  );
 
-  // ── R2 cache lookup ──
-  const cached = await c.env.OG_CACHE.get(r2Key);
-  if (cached) {
-    // Cache hit — return stored PNG, still track usage (counts toward limit)
+  // Track usage (counts toward limit) — awaited on hit, fire-and-forget on miss
+  if (hit) {
     await recordUsage(c.env.DB, apiKey, params.template ?? 'default', true);
-    const imageData = await cached.arrayBuffer();
-    return new Response(imageData, {
-      headers: {
-        'Content-Type': 'image/png',
-        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
-        'X-Cache': 'HIT',
-        'X-SnapOG-Tier': apiKey.tier,
-      },
-    });
+  } else {
+    c.executionCtx.waitUntil(
+      recordUsage(c.env.DB, apiKey, params.template ?? 'default', false)
+    );
   }
 
-  // ── Generate image ──
-  const imageResponse = await generateOGImage(params, watermark);
-  const imageBuffer = await imageResponse.arrayBuffer();
-
-  // Store in R2 (fire-and-forget, don't block response)
-  c.executionCtx.waitUntil(
-    c.env.OG_CACHE.put(r2Key, imageBuffer.slice(0), {
-      httpMetadata: { contentType: 'image/png' },
-      customMetadata: { tier: apiKey.tier, template: params.template ?? 'default' },
-    })
-  );
-
-  // Record usage (also fire-and-forget after we have the image)
-  c.executionCtx.waitUntil(
-    recordUsage(c.env.DB, apiKey, params.template ?? 'default', false)
-  );
-
-  return new Response(imageBuffer, {
+  return new Response(body, {
     headers: {
       'Content-Type': 'image/png',
       'Cache-Control': 'public, max-age=86400, s-maxage=604800',
-      'X-Cache': 'MISS',
+      'X-Cache': hit ? 'HIT' : 'MISS',
       'X-SnapOG-Tier': apiKey.tier,
     },
   });
