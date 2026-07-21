@@ -609,7 +609,7 @@ export function landingPage(host: string): string {
     <div class="container">
       <p class="section-title">Pricing</p>
       <h2 class="section-h2">Start free. Scale as you publish.</h2>
-      <p class="section-sub" style="margin-bottom:0;">Free tier is live today. Paid tiers open soon — join the waitlist and we'll email you when billing launches.</p>
+      <p class="section-sub" style="margin-bottom:0;">Free tier is live today. Paid tiers open soon — open an issue if you want early access.</p>
       <div class="pricing-grid">
 
         <div class="pricing-card">
@@ -642,7 +642,7 @@ export function landingPage(host: string): string {
             <li>Priority support</li>
           </ul>
           <div class="pricing-cta">
-            <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Pro%20waitlist" class="btn btn-primary" style="width:100%;">Join waitlist →</a>
+            <a href="https://github.com/MaxMiksa/Auto-Company/issues" class="btn btn-primary" style="width:100%;">Request access →</a>
           </div>
         </div>
 
@@ -659,7 +659,7 @@ export function landingPage(host: string): string {
             <li>SLA + priority queue</li>
           </ul>
           <div class="pricing-cta">
-            <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Business" class="btn btn-ghost" style="width:100%;">Contact us →</a>
+            <a href="https://github.com/MaxMiksa/Auto-Company/issues" class="btn btn-ghost" style="width:100%;">Open an issue →</a>
           </div>
         </div>
 
@@ -827,7 +827,7 @@ export function dashboardPage(key: ApiKey, recentCount: number, host: string): s
             key.tier === 'free'
               ? `<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
                    <p style="font-size:13px;color:var(--text-2);">Need higher limits?</p>
-                   <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Pro%20waitlist" class="btn btn-primary" style="margin-top:10px;">Join Pro waitlist →</a>
+                   <a href="https://github.com/MaxMiksa/Auto-Company/issues" class="btn btn-primary" style="margin-top:10px;">Request access →</a>
                    <p style="font-size:12px;color:var(--text-3);margin-top:10px;">Paid billing launches soon.</p>
                  </div>`
               : ''
