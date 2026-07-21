@@ -122,23 +122,48 @@ async function renderOrCache(
   return { body, hit: false };
 }
 
+// Lightweight visit analytics on content pages. Fire-and-forget via waitUntil so
+// the page render is never blocked on a DB write. Skips our own smoke UA
+// (snapog-smoke) so deploy verification doesn't drown the "did a real user
+// arrive" signal.
+// ponytail: one D1 row per visit — fine at low volume; if write rate on a hot
+// path ever matters, swap to CF Analytics Engine (writeDataPoint) without
+// touching call sites.
+async function recordVisit(db: D1Database, path: string, raw: Request): Promise<void> {
+  const ua = raw.headers.get('user-agent') ?? '';
+  if (ua.includes('snapog-smoke')) return;
+  const referrer = raw.headers.get('referer');
+  await db
+    .prepare('INSERT INTO visits (id, path, country, referrer) VALUES (?, ?, ?, ?)')
+    .bind(
+      crypto.randomUUID(),
+      path,
+      raw.cf?.country ?? null,
+      referrer ? referrer.slice(0, 200) : null
+    )
+    .run();
+}
+
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
 // Landing page
 app.get('/', c => {
   const host = new URL(c.req.url).host;
+  c.executionCtx.waitUntil(recordVisit(c.env.DB, '/', c.req.raw));
   return htmlResponse(landingPage(host));
 });
 
 // Playground — keyless live preview; converts visitors to signups
 app.get('/play', c => {
   const host = new URL(c.req.url).host;
+  c.executionCtx.waitUntil(recordVisit(c.env.DB, '/play', c.req.raw));
   return htmlResponse(playgroundPage(host));
 });
 
 // Gallery — wall of live-rendered preset OG images; each deep-links into /play.
 app.get('/gallery', c => {
   const host = new URL(c.req.url).host;
+  c.executionCtx.waitUntil(recordVisit(c.env.DB, '/gallery', c.req.raw));
   return htmlResponse(galleryPage(host));
 });
 
@@ -379,7 +404,21 @@ app.get('/dashboard', async c => {
   return htmlResponse(dashboardPage(refreshed, recent?.cnt ?? 0, host));
 });
 
-// ── Health / ops ──────────────────────────────────────────────────────────────
+// ── Stats / ops ───────────────────────────────────────────────────────────────
+// ponytail: unauth aggregate counts — fine while traffic volume isn't sensitive.
+// Add an admin token (AUTH_SECRET) the moment counts carry commercial meaning.
+app.get('/stats', async c => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT path,
+            COUNT(*) AS visits,
+            SUM(CASE WHEN created_at > datetime('now','-1 day') THEN 1 ELSE 0 END) AS visits_24h
+       FROM visits
+       GROUP BY path
+       ORDER BY visits DESC`
+  ).all<{ path: string; visits: number; visits_24h: number }>();
+  return c.json({ generated_at: new Date().toISOString(), paths: results });
+});
+
 app.get('/health', c => c.json({ ok: true, ts: new Date().toISOString() }));
 
 // 404 fallback
