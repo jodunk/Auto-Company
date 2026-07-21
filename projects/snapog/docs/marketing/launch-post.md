@@ -28,6 +28,10 @@ Drop the URL straight into your `<meta property="og:image">`. Params: `title` (r
 
 **Coming, not buyable yet:** $19 Pro (5k/mo, no watermark) and $49 Business (25k/mo, custom templates). Billing isn't built. If you want it, say so in a comment and I'll flag you when it lands.
 
+**Try it without signing up — no key, no email:**
+- Playground (live render, edit every field): https://snapog.mixnology.workers.dev/play
+- Gallery (8 real edge renders): https://snapog.mixnology.workers.dev/gallery
+
 **What's next:** more templates, font uploads, maybe a dashboard. Built in public.
 
 Live: https://snapog.mixnology.workers.dev
@@ -54,6 +58,8 @@ Params: `title`, `description`, `domain`, `author`, `tag`, `template`, `theme`.
 
 **Paid ($19 / $49) is waitlist only** — billing isn't built yet. If you want it, comment and I'll flag you when it ships.
 
+Try it first, no signup: https://snapog.mixnology.workers.dev/play · gallery: https://snapog.mixnology.workers.dev/gallery
+
 Live: https://snapog.mixnology.workers.dev
 
 What would make this useful for your blog or site?
@@ -71,7 +77,7 @@ One GET request → 1200×630 PNG, rendered at the edge, cached globally on Clou
 
 No Puppeteer. No JSX. No framework lock-in.
 
-https://snapog.mixnology.workers.dev
+Try it live, no signup → https://snapog.mixnology.workers.dev/play
 
 **2.**
 Built SnapOG because I got tired of 800ms Puppeteer cold starts to make one image.
@@ -98,6 +104,7 @@ https://snapog.mixnology.workers.dev
 
 - [ ] Title picked (not alternate) — commit on publish.
 - [ ] Prod URL is `snapog.mixnology.workers.dev`, never `snapog.dev`.
+- [ ] Lead with the no-signup try-it link (`/play` or `/gallery`) — HN/reddit converts on "try now," not "sign up." The signup key still works, it's just not the front door.
 - [ ] Free tier claim is accurate: 100/mo, email signup, watermark.
 - [ ] Paid tiers clearly marked as waitlist / coming soon, not buyable.
 - [ ] `sk_YOUR_KEY` placeholder left in the curl — do NOT post a real key.
@@ -117,4 +124,4 @@ https://snapog.mixnology.workers.dev
 
 ---
 
-*Last updated: 2026-07-21. Owner: marketing-godin. Review when: billing ships, new competitor lands, or HN/mod feedback suggests copy drift.*
+*Last updated: 2026-07-21 (cycle 7: wired all variants to the no-signup `/play` + `/gallery` surfaces — they predate this post). Owner: marketing-godin. Review when: billing ships, new competitor lands, or HN/mod feedback suggests copy drift.*

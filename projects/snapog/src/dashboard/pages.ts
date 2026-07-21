@@ -489,8 +489,8 @@ export function landingPage(host: string): string {
         Stop hand-coding OG templates — let SnapOG generate them dynamically.
       </p>
       <div class="hero-cta">
-        <a href="/register" class="btn btn-primary" style="font-size:15px;padding:12px 28px;">Get Free API Key</a>
-        <a href="/#how-it-works" class="btn btn-ghost" style="font-size:15px;padding:12px 28px;">View Docs</a>
+        <a href="/play" class="btn btn-primary" style="font-size:15px;padding:12px 28px;">Try the live playground →</a>
+        <a href="/register" class="btn btn-ghost" style="font-size:15px;padding:12px 28px;">Get Free API Key</a>
       </div>
 
       <!-- Live OG preview -->
