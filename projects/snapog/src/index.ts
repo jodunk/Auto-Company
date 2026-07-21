@@ -511,7 +511,40 @@ app.get('/stats', async c => {
        GROUP BY path
        ORDER BY visits DESC`
   ).all<{ path: string; visits: number; visits_24h: number }>();
-  return c.json({ generated_at: new Date().toISOString(), paths: results });
+
+  // Source attribution: bucket the referrer host so a publish-driven spike is
+  // actionable (which channel drove it — hn / ph / reddit / direct). ponytail:
+  // JS host→bucket over a GROUP BY referrer query — clearer than nested SQL
+  // instr/substr, and distinct-referrer cardinality is tiny at current volume.
+  // Ceiling: if thousands of distinct hosts ever appear, push bucketing into SQL.
+  const refRows = await c.env.DB.prepare(
+    'SELECT referrer, COUNT(*) AS visits FROM visits GROUP BY referrer'
+  ).all<{ referrer: string | null; visits: number }>();
+  const bucketFor = (ref: string | null): string => {
+    if (!ref) return 'direct';
+    let host: string;
+    try {
+      host = new URL(ref).hostname.replace(/^www\./, '');
+    } catch {
+      return 'other';
+    }
+    if (host.includes('news.ycombinator.com')) return 'hn';
+    if (host.includes('producthunt.com')) return 'ph';
+    if (host.includes('reddit.com')) return 'reddit';
+    if (host === 'gist.github.com') return 'gist';
+    if (host.includes('github.com')) return 'github';
+    return host;
+  };
+  const sourceMap = new Map<string, number>();
+  for (const r of refRows.results) {
+    const b = bucketFor(r.referrer);
+    sourceMap.set(b, (sourceMap.get(b) ?? 0) + r.visits);
+  }
+  const sources = [...sourceMap.entries()]
+    .map(([source, visits]) => ({ source, visits }))
+    .sort((a, b) => b.visits - a.visits);
+
+  return c.json({ generated_at: new Date().toISOString(), paths: results, sources });
 });
 
 app.get('/health', c => c.json({ ok: true, ts: new Date().toISOString() }));
