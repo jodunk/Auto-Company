@@ -5,8 +5,8 @@ Generate stunning Open Graph images via API — hosted on Cloudflare Workers, ca
 ## Quick Start
 
 ```bash
-# Get a free API key at https://snapog.dev/register, then:
-curl "https://snapog.dev/og?title=My+Blog+Post&domain=myblog.com&key=sk_YOUR_KEY" \
+# Get a free API key at https://snapog.mixnology.workers.dev/register, then:
+curl "https://snapog.mixnology.workers.dev/og?title=My+Blog+Post&domain=myblog.com&key=sk_YOUR_KEY" \
   --output og.png && open og.png
 ```
 
@@ -34,22 +34,24 @@ Headers:
 
 ```html
 <meta property="og:image"
-      content="https://snapog.dev/og?title=YOUR_TITLE&key=YOUR_KEY" />
+      content="https://snapog.mixnology.workers.dev/og?title=YOUR_TITLE&key=YOUR_KEY" />
 <meta property="og:image:width"  content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card"   content="summary_large_image" />
-<meta name="twitter:image"  content="https://snapog.dev/og?title=YOUR_TITLE&key=YOUR_KEY" />
+<meta name="twitter:image"  content="https://snapog.mixnology.workers.dev/og?title=YOUR_TITLE&key=YOUR_KEY" />
 ```
 
 ## Pricing
 
-| Tier | Price | Images/month |
-|------|-------|-------------|
-| Free | $0 | 100 |
-| Pro | $19/mo | 10,000 |
-| Business | $49/mo | 100,000 |
+Free tier is live today. Paid tiers are **planned** — billing is not yet wired up; join the waitlist (see the in-app pricing section) and we'll email you when it launches.
 
-Free tier images include "snapog.dev" watermark.
+| Tier | Price | Images/month | Status |
+|------|-------|-------------|--------|
+| Free | $0 | 100 | **Live** |
+| Pro | $19/mo (planned) | 10,000 | Waitlist |
+| Business | $49/mo (planned) | 100,000 | Waitlist |
+
+Free tier images include a small "SnapOG" watermark.
 
 ## Local Development
 

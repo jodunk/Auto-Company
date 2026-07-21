@@ -370,7 +370,7 @@ function footer(): string {
   return `
   <footer class="footer">
     <div class="container">
-      snapog.dev — OG images at the edge. Built with ♥ on Cloudflare Workers.
+      SnapOG — OG images at the edge. Built on Cloudflare Workers.
     </div>
   </footer>`;
 }
@@ -399,7 +399,7 @@ export function landingPage(host: string): string {
       <div class="og-preview-wrap" style="margin-top:56px;">
         <div class="og-preview-label">1200 × 630 PNG — rendered live</div>
         <img
-          src="/og?title=How%20to%20Build%20a%20Billion-Dollar%20API&description=A%20deep%20dive%20into%20developer%20tools%20that%20compound%20%E2%80%94%20and%20the%20pricing%20that%20makes%20them%20survive&domain=myblog.dev&theme=dark&template=default"
+          src="/demo-og"
           alt="Live OG image example"
           style="width:100%;border-radius:8px;"
         />
@@ -511,6 +511,7 @@ export function landingPage(host: string): string {
     <div class="container">
       <p class="section-title">Pricing</p>
       <h2 class="section-h2">Start free. Scale as you publish.</h2>
+      <p class="section-sub" style="margin-bottom:0;">Free tier is live today. Paid tiers open soon — join the waitlist and we'll email you when billing launches.</p>
       <div class="pricing-grid">
 
         <div class="pricing-card">
@@ -543,7 +544,7 @@ export function landingPage(host: string): string {
             <li>Priority support</li>
           </ul>
           <div class="pricing-cta">
-            <a href="/register?tier=pro" class="btn btn-primary" style="width:100%;">Start Pro →</a>
+            <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Pro%20waitlist" class="btn btn-primary" style="width:100%;">Join waitlist →</a>
           </div>
         </div>
 
@@ -560,7 +561,7 @@ export function landingPage(host: string): string {
             <li>SLA + priority queue</li>
           </ul>
           <div class="pricing-cta">
-            <a href="mailto:hello@snapog.dev" class="btn btn-ghost" style="width:100%;">Contact us →</a>
+            <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Business" class="btn btn-ghost" style="width:100%;">Contact us →</a>
           </div>
         </div>
 
@@ -625,7 +626,7 @@ export function registerPage(error?: string, tier?: string): string {
   return layout('Get API Key', body);
 }
 
-export function keyCreatedPage(rawKey: string, email: string, tier: string): string {
+export function keyCreatedPage(rawKey: string, email: string, tier: string, host: string): string {
   const body = `
   ${nav()}
   <section class="section">
@@ -660,7 +661,7 @@ export function keyCreatedPage(rawKey: string, email: string, tier: string): str
           <span class="code-block-lang">Quick start</span>
         </div>
         <pre><span class="c-comment"># Test your key</span>
-<span class="c-key">curl</span> <span class="c-str">"https://snapog.dev/og?title=Hello+World&amp;key=${rawKey}"</span> \
+<span class="c-key">curl</span> <span class="c-str">"https://${host}/og?title=Hello+World&amp;key=${rawKey}"</span> \
   <span class="c-val">--output</span> og.png && <span class="c-key">open</span> og.png</pre>
       </div>
 
@@ -685,7 +686,7 @@ export function keyCreatedPage(rawKey: string, email: string, tier: string): str
   return layout('API Key Created', body);
 }
 
-export function dashboardPage(key: ApiKey, recentCount: number): string {
+export function dashboardPage(key: ApiKey, recentCount: number, host: string): string {
   const pct = Math.round((key.usage_count / key.monthly_limit) * 100);
   const barClass = pct >= 100 ? 'full' : pct >= 80 ? 'warn' : '';
   const resetDate = new Date(key.usage_reset_at);
@@ -720,8 +721,9 @@ export function dashboardPage(key: ApiKey, recentCount: number): string {
           ${
             key.tier === 'free'
               ? `<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
-                   <p style="font-size:13px;color:var(--text-2);">Need more?</p>
-                   <a href="/register?tier=pro" class="btn btn-primary" style="margin-top:10px;">Upgrade to Pro — $19/mo →</a>
+                   <p style="font-size:13px;color:var(--text-2);">Need higher limits?</p>
+                   <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Pro%20waitlist" class="btn btn-primary" style="margin-top:10px;">Join Pro waitlist →</a>
+                   <p style="font-size:12px;color:var(--text-3);margin-top:10px;">Paid billing launches soon.</p>
                  </div>`
               : ''
           }
@@ -752,7 +754,7 @@ export function dashboardPage(key: ApiKey, recentCount: number): string {
               <span class="code-block-lang">HTML / meta tags</span>
             </div>
             <pre><span class="c-key">&lt;meta</span> <span class="c-val">property=</span><span class="c-str">"og:image"</span>
-      <span class="c-val">content=</span><span class="c-str">"https://snapog.dev/og?title=YOUR_TITLE&amp;key=${key.key_prefix}..."</span> <span class="c-key">/&gt;</span></pre>
+      <span class="c-val">content=</span><span class="c-str">"https://${host}/og?title=YOUR_TITLE&amp;key=${key.key_prefix}..."</span> <span class="c-key">/&gt;</span></pre>
           </div>
           <div class="code-block" style="margin-top:12px;">
             <div class="code-block-header">
@@ -761,7 +763,7 @@ export function dashboardPage(key: ApiKey, recentCount: number): string {
               </div>
               <span class="code-block-lang">cURL test</span>
             </div>
-            <pre><span class="c-key">curl</span> <span class="c-str">"https://snapog.dev/og?title=My+Blog+Post&amp;domain=myblog.com&amp;key=${key.key_prefix}..."</span> \
+            <pre><span class="c-key">curl</span> <span class="c-str">"https://${host}/og?title=My+Blog+Post&amp;domain=myblog.com&amp;key=${key.key_prefix}..."</span> \
   <span class="c-val">--output</span> og.png && <span class="c-key">open</span> og.png</pre>
           </div>
         </div>

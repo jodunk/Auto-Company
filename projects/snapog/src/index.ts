@@ -101,6 +101,46 @@ app.get('/', c => {
   return htmlResponse(landingPage(host));
 });
 
+// ── Demo image (keyless showcase for landing hero; not usage-counted, R2-cached) ─
+// ponytail: abuse = someone hotlinks ONE fixed PNG. Acceptable; Cache-Control keeps it cheap.
+const DEMO_PARAMS: OGParams = {
+  title: 'Ship OG images without the infra',
+  description: 'One GET request. Instant PNG. Cached at the edge.',
+  domain: 'indieblog.dev',
+  author: 'Sam Builder',
+  tag: 'Demo',
+  template: 'default',
+  theme: 'dark',
+};
+const DEMO_R2_KEY = 'demo/hero.png';
+
+app.get('/demo-og', async c => {
+  const cached = await c.env.OG_CACHE.get(DEMO_R2_KEY);
+  if (cached) {
+    return new Response(await cached.arrayBuffer(), {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+        'X-Cache': 'HIT',
+      },
+    });
+  }
+  const resp = await generateOGImage(DEMO_PARAMS, false);
+  const buf = await resp.arrayBuffer();
+  c.executionCtx.waitUntil(
+    c.env.OG_CACHE.put(DEMO_R2_KEY, buf.slice(0), {
+      httpMetadata: { contentType: 'image/png' },
+    })
+  );
+  return new Response(buf, {
+    headers: {
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      'X-Cache': 'MISS',
+    },
+  });
+});
+
 // ── OG image generation ────────────────────────────────────────────────────────
 app.get('/og', async c => {
   const q = c.req.query();
@@ -131,7 +171,7 @@ app.get('/og', async c => {
         error: 'Monthly image limit reached',
         tier: apiKey.tier,
         limit: apiKey.monthly_limit,
-        upgrade_url: '/register?tier=pro',
+        upgrade_url: '/#pricing',
       },
       429
     );
@@ -217,8 +257,9 @@ app.post('/register', async c => {
     return htmlResponse(registerPage('Please enter a valid email address', tier), 400);
   }
 
-  const validTiers: Tier[] = ['free', 'pro', 'business'];
-  const safeTier: Tier = validTiers.includes(tier as Tier) ? (tier as Tier) : 'free';
+  // ponytail: no billing exists → never issue paid tiers via self-registration.
+  // Paid plans are waitlist-only until Stripe lands. One guard at the root, not per-route.
+  const safeTier: Tier = 'free';
 
   // Upsert user
   const userId = crypto.randomUUID();
@@ -254,7 +295,8 @@ app.post('/register', async c => {
     .bind(keyId, user.id, keyname, keyPrefix, keyHash, safeTier, monthlyLimit, resetAt)
     .run();
 
-  return htmlResponse(keyCreatedPage(rawKey, email, safeTier));
+  const host = new URL(c.req.url).host;
+  return htmlResponse(keyCreatedPage(rawKey, email, safeTier, host));
 });
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
@@ -280,7 +322,8 @@ app.get('/dashboard', async c => {
     .bind(refreshed.id, yesterday)
     .first<{ cnt: number }>();
 
-  return htmlResponse(dashboardPage(refreshed, recent?.cnt ?? 0));
+  const host = new URL(c.req.url).host;
+  return htmlResponse(dashboardPage(refreshed, recent?.cnt ?? 0, host));
 });
 
 // ── Health / ops ──────────────────────────────────────────────────────────────
