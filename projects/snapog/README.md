@@ -1,5 +1,7 @@
 # SnapOG
 
+![SnapOG](https://snapog.mixnology.workers.dev/demo-og)
+
 Generate stunning Open Graph images via API — hosted on Cloudflare Workers, cached globally on R2, sub-100ms on cache hit.
 
 ## Quick Start
