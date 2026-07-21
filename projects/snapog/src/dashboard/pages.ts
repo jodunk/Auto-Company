@@ -429,6 +429,7 @@ function nav(_activePath = '/'): string {
     <a class="nav-logo" href="/">Snap<span>OG</span></a>
     <div class="nav-links">
       <a href="/play">Playground</a>
+      <a href="/gallery">Gallery</a>
       <a href="/#how-it-works">Docs</a>
       <a href="/#pricing">Pricing</a>
       <a href="/register" class="btn btn-primary">Get API Key →</a>
@@ -1085,6 +1086,135 @@ export function playgroundPage(host: string): string {
     image: `https://${host}/preview?${playCardParams}`,
   });
   return layout('Playground', body, head);
+}
+
+// ── Gallery ───────────────────────────────────────────────────────────────────
+// A wall of live-rendered OG previews. Each card's <img> hits /preview (R2-cached,
+// so N fixed presets = N cached PNGs forever — cheap). Each card deep-links into
+// /play pre-filled (playground already reads query params). One preset object →
+// thumb + play link via presetQuery(). ponytail: reuses /preview + /play + layout.
+type Preset = {
+  title: string;
+  description?: string;
+  domain?: string;
+  author?: string;
+  tag: string;
+  template: 'default' | 'blog' | 'article';
+  theme: 'dark' | 'light';
+};
+
+const GALLERY_PRESETS: Preset[] = [
+  { title: 'Meet Lumen 2.0', description: 'The fastest way to ship product updates.', domain: 'lumen.app', author: 'Lumen Team', tag: 'Launch', template: 'default', theme: 'dark' },
+  { title: 'Why we rewrote our API in three weeks', description: 'Lessons from a clean-slate rewrite.', domain: 'indieblog.dev', author: 'Sam Builder', tag: 'Engineering', template: 'blog', theme: 'dark' },
+  { title: 'Getting Started with SnapOG', description: 'Your first OG image in 60 seconds.', domain: 'snapog.dev', tag: 'Docs', template: 'article', theme: 'light' },
+  { title: 'v2.0 — Edge caching is live', description: 'Images now served from 300+ edge locations.', domain: 'snapog.dev', tag: 'Changelog', template: 'default', theme: 'dark' },
+  { title: 'The Edge — Episode 42', description: 'Shipping at the edge with Kelsey Hightower.', domain: 'theedge.fm', author: 'Dev Radio', tag: 'Podcast', template: 'blog', theme: 'dark' },
+  { title: 'How Acme cut page TTI by 40%', description: 'A six-week edge migration story.', domain: 'acme.io', author: 'Case Study', tag: 'Customers', template: 'article', theme: 'light' },
+  { title: 'The Edge Weekly · Issue 12', description: 'Five links on edge computing and developer DX.', domain: 'edgeweekly.dev', author: 'Jane Doe', tag: 'Newsletter', template: 'default', theme: 'dark' },
+  { title: '404 — This page took a day off', description: 'But your OG images never sleep.', domain: 'yoursite.dev', tag: 'Error Page', template: 'default', theme: 'light' },
+];
+
+function presetQuery(p: Preset): string {
+  const q = new URLSearchParams({ title: p.title });
+  if (p.description) q.set('description', p.description);
+  if (p.domain) q.set('domain', p.domain);
+  if (p.author) q.set('author', p.author);
+  q.set('tag', p.tag);
+  q.set('template', p.template);
+  q.set('theme', p.theme);
+  return q.toString();
+}
+
+export function galleryPage(host: string): string {
+  const cards = GALLERY_PRESETS.map((p, i) => {
+    const q = presetQuery(p);
+    return `
+      <a class="gallery-card" href="/play?${q}" style="--i:${i}">
+        <div class="gallery-thumb">
+          <img loading="lazy" src="/preview?${q}" alt="${p.title}" />
+        </div>
+        <div class="gallery-body">
+          <div class="gallery-meta">
+            <span class="gallery-tag">${p.tag}</span>
+            <span class="gallery-spec">${p.template} · ${p.theme}</span>
+          </div>
+          <div class="gallery-title">${p.title}</div>
+        </div>
+        <div class="gallery-cta">Open in playground →</div>
+      </a>`;
+  }).join('');
+
+  const body = `
+  ${nav('/gallery')}
+
+  <section class="play-hero">
+    <div class="container-wide">
+      <div class="hero-eyebrow">Gallery</div>
+      <h1>Every card here is a <em>real, live render.</em></h1>
+      <p>No screenshots. Every image below is generated on-demand at the edge and cached globally. Tap any design to open it in the playground — fully editable, zero signup.</p>
+      <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="/play" class="btn btn-primary">Open the playground →</a>
+        <a href="/register" class="btn btn-ghost">Get a free API key</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:24px;padding-bottom:80px;">
+    <div class="container-wide">
+      <div class="gallery-grid">${cards}</div>
+      <p class="play-note" style="text-align:center;margin-top:40px;">8 presets · 3 templates · dark + light themes — all rendered by the same <code style="font-family:var(--font-mono);color:var(--accent);">/og</code> API you can call.</p>
+    </div>
+  </section>
+
+  ${footer()}`;
+
+  // Scoped page CSS. Matches design tokens (amber/teal on dot-grid surface).
+  const galleryCss = `<style>
+    .gallery-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+    .gallery-card {
+      position: relative; display: flex; flex-direction: column;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-lg); overflow: hidden;
+      text-decoration: none; color: var(--text-1);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      opacity: 0; animation: gfade 0.5s ease forwards; animation-delay: calc(var(--i) * 55ms);
+    }
+    .gallery-card:hover { transform: translateY(-4px); border-color: var(--accent-dim); box-shadow: 0 12px 40px -12px rgba(245,158,11,0.28); }
+    .gallery-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .gallery-thumb { aspect-ratio: 1200 / 630; background: #000; overflow: hidden; }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+    .gallery-card:hover .gallery-thumb img { transform: scale(1.03); }
+    .gallery-body { padding: 18px 20px 16px; }
+    .gallery-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .gallery-tag {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: var(--teal);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid rgba(20,184,166,0.3); border-radius: 100px; padding: 2px 10px;
+    }
+    .gallery-spec { font-family: var(--font-mono); font-size: 10px; color: var(--text-2); letter-spacing: 0.06em; text-transform: uppercase; }
+    .gallery-title { font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--text-1); }
+    .gallery-cta {
+      font-family: var(--font-mono); font-size: 12px; color: var(--accent);
+      padding: 0 20px 18px; margin-top: auto;
+      opacity: 0; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .gallery-card:hover .gallery-cta, .gallery-card:focus-visible .gallery-cta { opacity: 1; transform: none; }
+    @keyframes gfade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .gallery-card { animation: none; opacity: 1; }
+      .gallery-card:hover .gallery-thumb img { transform: none; }
+    }
+  </style>`;
+
+  const head = ogMeta({
+    host,
+    path: '/gallery',
+    title: 'SnapOG Gallery — real, live-rendered OG images',
+    description: 'A wall of OG image presets — every card is a live edge render. Open any design in the playground.',
+    image: `https://${host}/preview?${presetQuery(GALLERY_PRESETS[0])}`,
+  }) + galleryCss;
+
+  return layout('Gallery', body, head);
 }
 
 export function errorPage(code: number, message: string): string {

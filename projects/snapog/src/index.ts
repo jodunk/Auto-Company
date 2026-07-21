@@ -10,6 +10,7 @@ import {
   dashboardPage,
   errorPage,
   playgroundPage,
+  galleryPage,
 } from './dashboard/pages';
 import type { ApiKey, Env, OGParams, Tier } from './types';
 import { TIER_LIMITS } from './types';
@@ -133,6 +134,12 @@ app.get('/', c => {
 app.get('/play', c => {
   const host = new URL(c.req.url).host;
   return htmlResponse(playgroundPage(host));
+});
+
+// Gallery — wall of live-rendered preset OG images; each deep-links into /play.
+app.get('/gallery', c => {
+  const host = new URL(c.req.url).host;
+  return htmlResponse(galleryPage(host));
 });
 
 // ── Demo image (keyless showcase for landing hero; not usage-counted, R2-cached) ─
