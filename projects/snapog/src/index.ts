@@ -1,4 +1,4 @@
-// Imog — Main Cloudflare Worker
+// SnapOG — Main Cloudflare Worker
 // Routes: GET /og (image gen), GET / (landing), GET/POST /register, GET /dashboard
 
 import { Hono } from 'hono';

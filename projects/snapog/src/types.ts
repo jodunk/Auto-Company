@@ -1,4 +1,4 @@
-// Imog — shared types
+// SnapOG — shared types
 
 export type Tier = 'free' | 'pro' | 'business';
 
