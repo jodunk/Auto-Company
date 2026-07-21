@@ -1,4 +1,4 @@
-# SnapOG — RapidAPI Listing (paste-ready)
+# Imog — RapidAPI Listing (paste-ready)
 
 **Status:** Draft for operator submission. The one autonomous distribution channel for a product that's been parked 4 cycles on a human-gated launch post.
 
@@ -12,7 +12,7 @@ RapidAPI proxies subscriber calls to our backend and injects a header `X-RapidAP
 
 - Accepts the same params as `/og` (title, description, domain, author, tag, theme, template).
 - Renders **without watermark** when `X-RapidAPI-Proxy-Secret` matches env `RAPIDAPI_PROXY_SECRET`.
-- Returns **401** otherwise — only RapidAPI may call it (RapidAPI enforces subscriber quota + billing on their side; we don't count it against SnapOG keys).
+- Returns **401** otherwise — only RapidAPI may call it (RapidAPI enforces subscriber quota + billing on their side; we don't count it against Imog keys).
 - R2-cached like the other render paths.
 
 See `docs/devops/rapidapi-endpoint.md` for the ~20-line implementation (a sibling doc; implement next cycle once Munger clears the decision). Until that endpoint ships, the listing can still go live in **free/watermarked mode** pointing at the existing `/preview` route — but paid conversion needs the watermark-removal path.
@@ -23,7 +23,7 @@ See `docs/devops/rapidapi-endpoint.md` for the ~20-line implementation (a siblin
 
 | Field | Value |
 |---|---|
-| **API name** | SnapOG — OG Image API |
+| **API name** | Imog — OG Image API |
 | **Short description** | Generate Open Graph / social share images from a URL. Dynamic, edge-cached PNGs for any page, post, or product. |
 | **Category** | Images / Data / Developer Tools |
 | **Tags** | og-image, open-graph, social-cards, meta-image, twitter-card, satori, edge |
@@ -33,7 +33,7 @@ See `docs/devops/rapidapi-endpoint.md` for the ~20-line implementation (a siblin
 
 ### Long description (paste)
 
-> SnapOG turns any URL into a polished Open Graph image. Pass a title (and optional description, domain, author, tag, theme, template) and get back a 1200×630 PNG — rendered at the Cloudflare edge and cached globally, so repeat calls are near-instant.
+> Imog turns any URL into a polished Open Graph image. Pass a title (and optional description, domain, author, tag, theme, template) and get back a 1200×630 PNG — rendered at the Cloudflare edge and cached globally, so repeat calls are near-instant.
 >
 > Use it for blog posts, product pages, changelog entries, podcast episodes, newsletters, or anywhere you want a link preview that doesn't look auto-generated. Three templates (default / blog / article), dark + light themes.
 >
@@ -92,7 +92,7 @@ RapidAPI takes ~10–20% rev share; payouts via their provider account.
 2. "Add new API" → paste metadata above.
 3. Define the `GET /v1/og` endpoint in the Endpoints tab (spec above).
 4. Set `X-RapidAPI-Proxy-Secret` in the API's gateway settings → record the value.
-5. `wrangler secret put RAPIDAPI_PROXY_SECRET` on the SnapOG worker with that value (after the `/v1/og` endpoint ships).
+5. `wrangler secret put RAPIDAPI_PROXY_SECRET` on the Imog worker with that value (after the `/v1/og` endpoint ships).
 6. Add pricing tiers (table above).
 7. Submit for review (RapidAPI approves within ~1–3 days).
 8. Once live → `curl https://snapog.mixnology.workers.dev/stats` and watch whether referrals arrive (we can add a `rapidapi` referrer bucket to `recordVisit` if we want attribution).
@@ -103,7 +103,7 @@ RapidAPI takes ~10–20% rev share; payouts via their provider account.
 
 ## What this tests
 
-The core thesis: **does an API marketplace distribute a product autonomously, without a social launch?** SnapOG has been parked 4 cycles because its only GTM was a human-published post. RapidAPI is the cheapest way to find out if a marketplace carries it. Three outcomes:
+The core thesis: **does an API marketplace distribute a product autonomously, without a social launch?** Imog has been parked 4 cycles because its only GTM was a human-published post. RapidAPI is the cheapest way to find out if a marketplace carries it. Three outcomes:
 
 - **Traffic + paid subs within 2–4 weeks** → thesis validated. Build PlaceholdOG (product #2) on the same distribution model with confidence.
 - **Traffic, no paid subs** → free-tier demand exists, pricing/watermark needs work.

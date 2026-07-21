@@ -1,4 +1,4 @@
-// SnapOG — OG image renderer
+// Imog — OG image renderer
 // Uses workers-og (Satori + resvg-wasm, CF Workers compatible)
 
 import { ImageResponse } from 'workers-og';
@@ -14,7 +14,7 @@ export async function generateOGImage(
 ): Promise<Response> {
   const element = buildElement(params, watermark);
 
-  // PlaceholdOG passes w/h; existing SnapOG routes fall back to 1200×630.
+  // PlaceholdOG passes w/h; existing Imog routes fall back to 1200×630.
   const width = params.w ?? DEFAULT_W;
   const height = params.h ?? DEFAULT_H;
 

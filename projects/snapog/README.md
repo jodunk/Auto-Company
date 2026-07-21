@@ -1,6 +1,6 @@
-# SnapOG
+# Imog
 
-![SnapOG](https://snapog.mixnology.workers.dev/demo-og)
+![Imog](https://snapog.mixnology.workers.dev/demo-og)
 
 Generate stunning Open Graph images via API — hosted on Cloudflare Workers, cached globally on R2, sub-100ms on cache hit.
 
@@ -77,7 +77,7 @@ Free tier is live today. Paid tiers are **planned** — billing is not yet wired
 | Pro | $19/mo (planned) | 10,000 | Waitlist |
 | Business | $49/mo (planned) | 100,000 | Waitlist |
 
-Free tier images include a small "SnapOG" watermark.
+Free tier images include a small "Imog" watermark.
 
 ## Local Development
 

@@ -1,10 +1,10 @@
-# SnapOG — Positioning
+# Imog — Positioning
 
-> Source of truth for how we describe SnapOG. If copy anywhere disagrees with this, this wins. Update when positioning actually shifts, not per campaign.
+> Source of truth for how we describe Imog. If copy anywhere disagrees with this, this wins. Update when positioning actually shifts, not per campaign.
 
 ## One-line positioning
 
-**For** indie hackers, dev-blog authors, and OSS maintainers **who** want per-page OG images without standing up Puppeteer or hand-coding JSX templates, **SnapOG is** an OG image API **that** returns a 1200×630 PNG from a single GET request, rendered at the edge and cached globally — **unlike** anything else, your OG image is just a URL.
+**For** indie hackers, dev-blog authors, and OSS maintainers **who** want per-page OG images without standing up Puppeteer or hand-coding JSX templates, **Imog is** an OG image API **that** returns a 1200×630 PNG from a single GET request, rendered at the edge and cached globally — **unlike** anything else, your OG image is just a URL.
 
 ## The hook (one sentence, repeat it until you're sick of it)
 
@@ -17,19 +17,19 @@ Everything else flows from this. If a piece of copy doesn't ultimately ladder ba
 ### 1. vs Vercel OG (`@vercel/og`)
 - **Their model:** Write JSX, ship a function, lock into Vercel's runtime.
 - **Our model:** Write a URL. Any stack, any host, any framework.
-- **One-liner:** "Vercel OG is a component. SnapOG is a URL."
+- **One-liner:** "Vercel OG is a component. Imog is a URL."
 - **Where we lose honestly:** If you're already all-in on Next.js + Vercel, `@vercel/og` is more flexible for dynamic layouts. We're not chasing that.
 
 ### 2. vs Puppeteer / headless-browser services
 - **Their model:** Boot Chromium in a lambda, screenshot HTML, pay for cold starts (~500–1000ms, $$ memory).
 - **Our model:** Satori (layout) + resvg-wasm (render) at the edge, R2-cached after first hit.
-- **One-liner:** "Puppeteer is a browser. SnapOG is a function."
+- **One-liner:** "Puppeteer is a browser. Imog is a function."
 - **Where we lose honestly:** Arbitrary HTML/CSS won't render pixel-perfect. We support the OG-card subset well. Don't pitch us as a general HTML-to-image tool.
 
 ### 3. vs Placid / Robolly / Cloudinary OG
 - **Their model:** Visual template designer, monthly subscription ($29–$99+), built for marketing teams.
 - **Our model:** URL-driven, developer-first, free tier covers most personal blogs.
-- **One-liner:** "Placid is a designer. SnapOG is an API."
+- **One-liner:** "Placid is a designer. Imog is an API."
 - **Where we lose honestly:** No drag-and-drop editor, limited template customization. Marketing teams should pick Placid.
 
 ## Alternate taglines (5)
@@ -40,7 +40,7 @@ Everything else flows from this. If a piece of copy doesn't ultimately ladder ba
 4. Stop hand-coding OG templates. Call a URL.
 5. From `<meta>` tag to PNG in one request.
 
-## Anti-positioning (what SnapOG is NOT)
+## Anti-positioning (what Imog is NOT)
 
 - **Not a visual template designer.** No drag-and-drop, no WYSIWYG. This is an API.
 - **Not a general HTML-to-image API.** It renders OG cards, not arbitrary web pages.
@@ -53,7 +53,7 @@ Everything else flows from this. If a piece of copy doesn't ultimately ladder ba
 
 Not "every developer with a blog." That's a market, not a tribe.
 
-The SnapOG tribe is: **indie hackers shipping side projects on Cloudflare/Vercel/Netlify who have manually written an OG template once and swore while doing it.** They've felt the specific pain. They get the joke when you say "Puppeteer cold start." They tell other indie hackers.
+The Imog tribe is: **indie hackers shipping side projects on Cloudflare/Vercel/Netlify who have manually written an OG template once and swore while doing it.** They've felt the specific pain. They get the joke when you say "Puppeteer cold start." They tell other indie hackers.
 
 Win this group first. They're the ones who'll post it on HN, not the marketing team at a Series B.
 

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# SnapOG — quick API test (requires a running dev server)
+# Imog — quick API test (requires a running dev server)
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://127.0.0.1:8787}"
 KEY="${API_KEY:-}"
 
-echo "=== SnapOG API smoke test ==="
+echo "=== Imog API smoke test ==="
 echo "Base URL: $BASE_URL"
 echo ""
 

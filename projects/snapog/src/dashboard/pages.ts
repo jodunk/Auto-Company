@@ -1,4 +1,4 @@
-// SnapOG — Dashboard & landing page HTML
+// Imog — Dashboard & landing page HTML
 // Aesthetic: "Carbon Terminal" — dark developer tool, amber accent, monospace-first
 
 import type { ApiKey } from '../types';
@@ -412,7 +412,7 @@ function layout(title: string, body: string, extraHead = ''): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} — SnapOG</title>
+  <title>${title} — Imog</title>
   <meta name="description" content="Generate stunning Open Graph images via API. Hosted on Cloudflare edge, cached globally, delivered in milliseconds." />
   <style>${CSS}</style>
   ${extraHead}
@@ -441,13 +441,13 @@ function footer(): string {
   return `
   <footer class="footer">
     <div class="container">
-      SnapOG — OG images at the edge. Built on Cloudflare Workers.
+      Imog — OG images at the edge. Built on Cloudflare Workers.
     </div>
   </footer>`;
 }
 
 // Open Graph + Twitter card meta. /play points og:image at a /preview URL
-// (eat our own dogfood): the playground's own share card IS a SnapOG render.
+// (eat our own dogfood): the playground's own share card IS a Imog render.
 // ponytail: static titles only — no user content — so no HTML-escape needed;
 // upgrade path = escape attributes if dynamic titles ever land here.
 function ogMeta(opts: {
@@ -486,7 +486,7 @@ export function landingPage(host: string): string {
       <h1>OG images for every URL,<br/><em>delivered at the edge</em></h1>
       <p class="hero-sub">
         One API call. Instant PNG. Cached globally on Cloudflare CDN.
-        Stop hand-coding OG templates — let SnapOG generate them dynamically.
+        Stop hand-coding OG templates — let Imog generate them dynamically.
       </p>
       <div class="hero-cta">
         <a href="/play" class="btn btn-primary" style="font-size:15px;padding:12px 28px;">Try the live playground →</a>
@@ -577,7 +577,7 @@ export function landingPage(host: string): string {
   <!-- Features -->
   <section class="section" style="padding-top:0;">
     <div class="container">
-      <p class="section-title">Why SnapOG</p>
+      <p class="section-title">Why Imog</p>
       <h2 class="section-h2">Built for production, priced for teams</h2>
       <div class="features-grid">
         <div class="feature-card">
@@ -621,7 +621,7 @@ export function landingPage(host: string): string {
             <li>3 templates (dark + light)</li>
             <li>R2 global cache</li>
             <li>API key + dashboard</li>
-            <li class="dim">SnapOG watermark</li>
+            <li class="dim">Imog watermark</li>
             <li class="dim">No custom fonts</li>
           </ul>
           <div class="pricing-cta">
@@ -684,7 +684,7 @@ export function landingPage(host: string): string {
   const head = ogMeta({
     host,
     path: '/',
-    title: 'SnapOG — OG images at the edge',
+    title: 'Imog — OG images at the edge',
     description: 'One API call. Instant PNG. Cached globally on Cloudflare CDN.',
     image: `https://${host}/demo-og`,
   });
@@ -984,7 +984,7 @@ export function playgroundPage(host: string): string {
       const PRESETS = {
         launch: { title: 'Meet Lumen 2.0', description: 'The fastest way to ship beautiful product updates.', domain: 'lumen.app', author: 'Lumen Team', tag: 'Launch', template: 'default', theme: 'dark' },
         blog:   { title: 'Why we rewrote our API in three weeks', description: 'Lessons from a clean-slate rewrite.', domain: 'indieblog.dev', author: 'Sam Builder', tag: 'Engineering', template: 'blog', theme: 'dark' },
-        docs:   { title: 'Getting Started with SnapOG', description: 'Generate your first OG image in 60 seconds.', domain: 'snapog.dev', author: '', tag: 'Docs', template: 'article', theme: 'light' },
+        docs:   { title: 'Getting Started with Imog', description: 'Generate your first OG image in 60 seconds.', domain: 'snapog.dev', author: '', tag: 'Docs', template: 'article', theme: 'light' },
       };
       const DEFAULTS = PRESETS.launch;
 
@@ -1080,7 +1080,7 @@ export function playgroundPage(host: string): string {
   const head = ogMeta({
     host,
     path: '/play',
-    title: 'SnapOG Playground — design OG images live',
+    title: 'Imog Playground — design OG images live',
     description:
       'Tweak the fields, watch it render live at the edge, copy the shareable URL. No signup, no key.',
     image: `https://${host}/preview?${playCardParams}`,
@@ -1106,7 +1106,7 @@ type Preset = {
 const GALLERY_PRESETS: Preset[] = [
   { title: 'Meet Lumen 2.0', description: 'The fastest way to ship product updates.', domain: 'lumen.app', author: 'Lumen Team', tag: 'Launch', template: 'default', theme: 'dark' },
   { title: 'Why we rewrote our API in three weeks', description: 'Lessons from a clean-slate rewrite.', domain: 'indieblog.dev', author: 'Sam Builder', tag: 'Engineering', template: 'blog', theme: 'dark' },
-  { title: 'Getting Started with SnapOG', description: 'Your first OG image in 60 seconds.', domain: 'snapog.dev', tag: 'Docs', template: 'article', theme: 'light' },
+  { title: 'Getting Started with Imog', description: 'Your first OG image in 60 seconds.', domain: 'snapog.dev', tag: 'Docs', template: 'article', theme: 'light' },
   { title: 'v2.0 — Edge caching is live', description: 'Images now served from 300+ edge locations.', domain: 'snapog.dev', tag: 'Changelog', template: 'default', theme: 'dark' },
   { title: 'The Edge — Episode 42', description: 'Shipping at the edge with Kelsey Hightower.', domain: 'theedge.fm', author: 'Dev Radio', tag: 'Podcast', template: 'blog', theme: 'dark' },
   { title: 'How Acme cut page TTI by 40%', description: 'A six-week edge migration story.', domain: 'acme.io', author: 'Case Study', tag: 'Customers', template: 'article', theme: 'light' },
@@ -1246,7 +1246,7 @@ export function galleryPage(host: string): string {
   const head = ogMeta({
     host,
     path: '/gallery',
-    title: 'SnapOG Gallery — real, live-rendered OG images',
+    title: 'Imog Gallery — real, live-rendered OG images',
     description: 'A wall of OG image presets — every card is a live edge render. Open any design in the playground.',
     image: `https://${host}/preview?${presetQuery(GALLERY_PRESETS[0])}`,
   }) + galleryCss;
@@ -1307,7 +1307,7 @@ export function placeholderLandingPage(host: string): string {
       </p>
       <div class="hero-cta">
         <a href="#presets" class="btn btn-primary" style="font-size:15px;padding:12px 28px;">Copy a preset →</a>
-        <a href="/play" class="btn btn-ghost" style="font-size:15px;padding:12px 28px;">Try SnapOG (OG images)</a>
+        <a href="/play" class="btn btn-ghost" style="font-size:15px;padding:12px 28px;">Try Imog (OG images)</a>
       </div>
 
       <div class="og-preview-wrap" style="margin-top:56px;">

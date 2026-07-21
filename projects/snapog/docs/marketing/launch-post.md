@@ -1,12 +1,12 @@
-# SnapOG — Launch Post
+# Imog — Launch Post
 
 > Ready-to-post variants for Show HN, r/webdev / r/SideProject, and X. The copy below is the source of truth — if you paraphrase, keep the factual claims (free tier, watermark, paid-on-waitlist, prod URL) intact.
 
 ## Title (picked, not hedged)
 
-**Show HN: SnapOG – OG images via a single GET, cached at the edge**
+**Show HN: Imog – OG images via a single GET, cached at the edge**
 
-Alternate (if first gets flagged as generic): **Show HN: SnapOG – Your OG image is a URL, rendered at the edge**
+Alternate (if first gets flagged as generic): **Show HN: Imog – Your OG image is a URL, rendered at the edge**
 
 ---
 
@@ -14,7 +14,7 @@ Alternate (if first gets flagged as generic): **Show HN: SnapOG – Your OG imag
 
 > Body ~215 words. Technical, candid, no hype. Include the curl. Be honest about paid being waitlist-only.
 
-Hey HN. I got tired of either hand-coding OG image templates in JSX or running a Puppeteer lambda that cold-started for ~800ms and cost more than it should. So I built SnapOG.
+Hey HN. I got tired of either hand-coding OG image templates in JSX or running a Puppeteer lambda that cold-started for ~800ms and cost more than it should. So I built Imog.
 
 One GET request returns a 1200×630 PNG, rendered at the edge with Satori + resvg-wasm, cached globally on Cloudflare R2. No SDK, no framework lock-in, no headless browser.
 
@@ -80,7 +80,7 @@ No Puppeteer. No JSX. No framework lock-in.
 Try it live, no signup → https://snapog.mixnology.workers.dev/play
 
 **2.**
-Built SnapOG because I got tired of 800ms Puppeteer cold starts to make one image.
+Built Imog because I got tired of 800ms Puppeteer cold starts to make one image.
 
 Now it's one curl. Free tier works today — 100 images/mo, no credit card.
 
