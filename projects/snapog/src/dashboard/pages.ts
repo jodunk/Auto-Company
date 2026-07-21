@@ -445,6 +445,33 @@ function footer(): string {
   </footer>`;
 }
 
+// Open Graph + Twitter card meta. /play points og:image at a /preview URL
+// (eat our own dogfood): the playground's own share card IS a SnapOG render.
+// ponytail: static titles only — no user content — so no HTML-escape needed;
+// upgrade path = escape attributes if dynamic titles ever land here.
+function ogMeta(opts: {
+  host: string;
+  path: string;
+  title: string;
+  description: string;
+  image: string; // absolute URL
+}): string {
+  const url = `https://${opts.host}${opts.path}`;
+  return [
+    `<meta property="og:type" content="website" />`,
+    `<meta property="og:url" content="${url}" />`,
+    `<meta property="og:title" content="${opts.title}" />`,
+    `<meta property="og:description" content="${opts.description}" />`,
+    `<meta property="og:image" content="${opts.image}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${opts.title}" />`,
+    `<meta name="twitter:description" content="${opts.description}" />`,
+    `<meta name="twitter:image" content="${opts.image}" />`,
+  ].join('\n  ');
+}
+
 export function landingPage(host: string): string {
   void host; // used in template strings below
 
@@ -653,7 +680,14 @@ export function landingPage(host: string): string {
     });
   </script>`;
 
-  return layout('Generate OG images at the edge', body);
+  const head = ogMeta({
+    host,
+    path: '/',
+    title: 'SnapOG — OG images at the edge',
+    description: 'One API call. Instant PNG. Cached globally on Cloudflare CDN.',
+    image: `https://${host}/demo-og`,
+  });
+  return layout('Generate OG images at the edge', body, head);
 }
 
 export function registerPage(error?: string, tier?: string): string {
@@ -1034,7 +1068,23 @@ export function playgroundPage(host: string): string {
     })();
   </script>`;
 
-  return layout('Playground', body);
+  const playCardParams = new URLSearchParams({
+    title: 'Design your OG image. Copy the URL. Ship it.',
+    description: 'Live OG image playground — no signup, no key. Render at the edge.',
+    domain: host,
+    tag: 'Playground',
+    template: 'default',
+    theme: 'dark',
+  });
+  const head = ogMeta({
+    host,
+    path: '/play',
+    title: 'SnapOG Playground — design OG images live',
+    description:
+      'Tweak the fields, watch it render live at the edge, copy the shareable URL. No signup, no key.',
+    image: `https://${host}/preview?${playCardParams}`,
+  });
+  return layout('Playground', body, head);
 }
 
 export function errorPage(code: number, message: string): string {
