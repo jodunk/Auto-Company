@@ -3,6 +3,7 @@
 
 import { Hono } from 'hono';
 import { generateOGImage, buildCacheKey } from './og/render';
+import { placeholderSvg } from './og/templates';
 import {
   landingPage,
   registerPage,
@@ -11,6 +12,7 @@ import {
   errorPage,
   playgroundPage,
   galleryPage,
+  placeholderLandingPage,
 } from './dashboard/pages';
 import type { ApiKey, Env, OGParams, Tier } from './types';
 import { TIER_LIMITS } from './types';
@@ -238,9 +240,17 @@ app.get('/preview', async c => {
   });
 });
 
+// ── PlaceholdOG landing page — explains embed syntax + live preset gallery.
+// Registered before /p/* so the exact match wins over the wildcard.
+app.get('/p', c => {
+  const host = new URL(c.req.url).host;
+  c.executionCtx.waitUntil(recordVisit(c.env.DB, '/p', c.req.raw));
+  return htmlResponse(placeholderLandingPage(host));
+});
+
 // ── PlaceholdOG — keyless, free, watermarked placeholder images ──────────────
-// ponytail: reuses renderOrCache with prefix='p'. NO recordVisit — images are
-// hot-linked, not page views; per-render D1 writes would drown real analytics.
+// ponytail: reuses renderOrCache with prefix='p'. NO recordVisit on image hits —
+// images are hot-linked, not page views; per-render D1 writes would drown analytics.
 // CFO cache-defense: W/H quantized to multiples of 10, clamped to [40,2000],
 // text capped at 60 chars — bounds combinatorial cache cardinality.
 function parseDims(raw: string): { w: number; h: number } | null {
@@ -259,16 +269,19 @@ function parseDims(raw: string): { w: number; h: number } | null {
   return { w: clamp(w), h: clamp(h) };
 }
 
-// Matches /p/600x400, /p/600x400/png, /p/600x400.png, /p/200 (square).
+// Matches /p/600x400, /p/600x400/png, /p/600x400.png, /p/600x400.svg,
+// /p/600x400/svg, /p/200 (square). SVG skips R2 (string build is ~0.1ms; edge
+// Cache-Control distributes). PNG goes through renderOrCache as before.
 app.get('/p/*', async c => {
   const rest = c.req.path.replace(/^\/p\//, '');
   const segments = rest.split('/');
   const format = segments.length > 1 ? segments[1] : undefined;
-  if (format && format !== 'png') {
-    return c.json({ error: `format '${format}' not supported — MVP supports png only` }, 400);
+  if (format && !['png', 'svg'].includes(format)) {
+    return c.json({ error: `format '${format}' not supported — MVP supports png | svg` }, 400);
   }
-  // Strip optional .png suffix on :dims (e.g. /p/600x400.png) per CTO arch doc.
-  const dimsRaw = segments[0].replace(/\.png$/i, '');
+  // Strip optional .png/.svg suffix on :dims (e.g. /p/600x400.svg).
+  const dimsRaw = segments[0].replace(/\.(png|svg)$/i, '');
+  const isSvg = format === 'svg' || /\.svg$/i.test(segments[0]);
   const parsed = parseDims(dimsRaw);
   if (!parsed) {
     return c.json({ error: 'dims must be WxH (e.g. 600x400) or N (square)' }, 400);
@@ -286,6 +299,16 @@ app.get('/p/*', async c => {
     bg: (q['bg'] ?? '').trim() || undefined,
     fg: (q['fg'] ?? '').trim() || undefined,
   };
+  if (isSvg) {
+    const svg = placeholderSvg(params, true);
+    return new Response(svg, {
+      headers: {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+        'X-Cache': 'BYPASS',
+      },
+    });
+  }
   const { body, hit } = await renderOrCache(
     c.env.OG_CACHE,
     c.executionCtx,

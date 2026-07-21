@@ -1,4 +1,4 @@
-# SnapOG
+# Imog
 
 Generate stunning Open Graph images via API — hosted on Cloudflare Workers, cached globally on R2, sub-100ms on cache hit.
 
@@ -30,6 +30,30 @@ Headers:
 - `X-Cache: HIT|MISS` — whether served from R2 cache
 - `X-SnapOG-Tier: free|pro|business`
 
+## PlaceholdOG — keyless placeholder images
+
+Same worker, separate route. **No API key, no signup.** The URL is the API.
+
+```
+GET /p/:dims          # /p/600x400  ·  /p/200 (square)
+  ?text=Hello         # optional label (default: WxH), max 60 chars
+  &bg=indigo          # named (indigo,slate,emerald,amber,rose,white,black,blue) or #hex
+  &fg=white           # same palette
+  &format=.png|.svg   # suffix or /png|/svg segment; default png
+```
+
+PNG by default. **Append `.svg` for crisp scalable vectors** (the differentiator vs raster placeholders) — rendered as a string, ~0.1ms, edge-cached, no R2.
+
+```html
+<img src="https://snapog.mixnology.workers.dev/p/600x400?text=Card&bg=indigo&fg=white" />
+<img src="https://snapog.mixnology.workers.dev/p/600x400.svg?text=Crisp&bg=emerald" />
+```
+
+Landing page + live presets: <https://snapog.mixnology.workers.dev/p>
+
+Free-tier placeholders carry a small "PlaceholdOG" watermark. Paid watermark removal ships once embed traction is real.
+
+
 ## HTML Integration
 
 ```html
@@ -51,7 +75,7 @@ Free tier is live today. Paid tiers are **planned** — billing is not yet wired
 | Pro | $19/mo (planned) | 10,000 | Waitlist |
 | Business | $49/mo (planned) | 100,000 | Waitlist |
 
-Free tier images include a small "SnapOG" watermark.
+Free tier images include a small "Imog" watermark.
 
 ## Local Development
 

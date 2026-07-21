@@ -103,6 +103,37 @@ function placeholderTemplate(params: OGParams, watermark: boolean): VNode {
   };
 }
 
+// XML escape for inline text in hand-built SVG. Placeholders only take a single
+// short text line (≤60 chars, validated upstream) so attribute + body escaping here
+// is the whole injection surface.
+function escapeXml(s: string): string {
+  return s.replace(/[<>&'"]/g, ch =>
+    ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[ch] as string)
+  );
+}
+
+// PlaceholdOG SVG — string template, no WASM render. Crisp at any size, which is
+// the differentiator vs placehold.co's raster PNGs. ~0.1ms to build, so we skip
+// R2 and rely on edge Cache-Control (s-maxage) for distribution: a MISS costs
+// near-zero CPU, unlike workers-og's ~50ms PNG render.
+// ponytail: same visual contract as placeholderTemplate() (bg + centered text +
+// bottom-right label) so PNG and SVG look identical at the same dims.
+export function placeholderSvg(params: OGParams, watermark: boolean): string {
+  const w = params.w ?? 1200;
+  const h = params.h ?? 630;
+  const text = escapeXml(params.text ?? params.title ?? `${w}×${h}`);
+  const bg = resolveColor(params.bg, '#0f172a');
+  const fg = resolveColor(params.fg, '#e2e8f0');
+  const minDim = Math.min(w, h);
+  const fontSize = Math.max(14, Math.round(minDim / 12));
+  const labelSize = Math.max(10, Math.round(fontSize / 3));
+  const pad = Math.max(8, Math.round(minDim / 40));
+  const label = watermark
+    ? `<text x="${w - pad}" y="${h - pad}" text-anchor="end" font-size="${labelSize}" fill="${fg}" fill-opacity="0.5" font-family="monospace" letter-spacing="2">PlaceholdOG</text>`
+    : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${text}"><rect width="${w}" height="${h}" fill="${bg}"/><text x="${w / 2}" y="${h / 2}" text-anchor="middle" dominant-baseline="central" font-size="${fontSize}" fill="${fg}" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="600">${text}</text>${label}</svg>`;
+}
+
 // Accent bar — left edge visual anchor
 function AccentBar(color: string): VNode {
   return {

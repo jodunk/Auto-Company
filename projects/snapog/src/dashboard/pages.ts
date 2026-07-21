@@ -1,4 +1,4 @@
-// SnapOG — Dashboard & landing page HTML
+// Imog — Dashboard & landing page HTML
 // Aesthetic: "Carbon Terminal" — dark developer tool, amber accent, monospace-first
 
 import type { ApiKey } from '../types';
@@ -412,7 +412,7 @@ function layout(title: string, body: string, extraHead = ''): string {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} — SnapOG</title>
+  <title>${title} — Imog</title>
   <meta name="description" content="Generate stunning Open Graph images via API. Hosted on Cloudflare edge, cached globally, delivered in milliseconds." />
   <style>${CSS}</style>
   ${extraHead}
@@ -441,13 +441,13 @@ function footer(): string {
   return `
   <footer class="footer">
     <div class="container">
-      SnapOG — OG images at the edge. Built on Cloudflare Workers.
+      Imog — OG images at the edge. Built on Cloudflare Workers.
     </div>
   </footer>`;
 }
 
 // Open Graph + Twitter card meta. /play points og:image at a /preview URL
-// (eat our own dogfood): the playground's own share card IS a SnapOG render.
+// (eat our own dogfood): the playground's own share card IS a Imog render.
 // ponytail: static titles only — no user content — so no HTML-escape needed;
 // upgrade path = escape attributes if dynamic titles ever land here.
 function ogMeta(opts: {
@@ -486,7 +486,7 @@ export function landingPage(host: string): string {
       <h1>OG images for every URL,<br/><em>delivered at the edge</em></h1>
       <p class="hero-sub">
         One API call. Instant PNG. Cached globally on Cloudflare CDN.
-        Stop hand-coding OG templates — let SnapOG generate them dynamically.
+        Stop hand-coding OG templates — let Imog generate them dynamically.
       </p>
       <div class="hero-cta">
         <a href="/play" class="btn btn-primary" style="font-size:15px;padding:12px 28px;">Try the live playground →</a>
@@ -577,7 +577,7 @@ export function landingPage(host: string): string {
   <!-- Features -->
   <section class="section" style="padding-top:0;">
     <div class="container">
-      <p class="section-title">Why SnapOG</p>
+      <p class="section-title">Why Imog</p>
       <h2 class="section-h2">Built for production, priced for teams</h2>
       <div class="features-grid">
         <div class="feature-card">
@@ -621,7 +621,7 @@ export function landingPage(host: string): string {
             <li>3 templates (dark + light)</li>
             <li>R2 global cache</li>
             <li>API key + dashboard</li>
-            <li class="dim">SnapOG watermark</li>
+            <li class="dim">Imog watermark</li>
             <li class="dim">No custom fonts</li>
           </ul>
           <div class="pricing-cta">
@@ -642,7 +642,7 @@ export function landingPage(host: string): string {
             <li>Priority support</li>
           </ul>
           <div class="pricing-cta">
-            <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Pro%20waitlist" class="btn btn-primary" style="width:100%;">Join waitlist →</a>
+            <a href="mailto:ekachai.w@gmail.com?subject=Imog%20Pro%20waitlist" class="btn btn-primary" style="width:100%;">Join waitlist →</a>
           </div>
         </div>
 
@@ -659,7 +659,7 @@ export function landingPage(host: string): string {
             <li>SLA + priority queue</li>
           </ul>
           <div class="pricing-cta">
-            <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Business" class="btn btn-ghost" style="width:100%;">Contact us →</a>
+            <a href="mailto:ekachai.w@gmail.com?subject=Imog%20Business" class="btn btn-ghost" style="width:100%;">Contact us →</a>
           </div>
         </div>
 
@@ -684,7 +684,7 @@ export function landingPage(host: string): string {
   const head = ogMeta({
     host,
     path: '/',
-    title: 'SnapOG — OG images at the edge',
+    title: 'Imog — OG images at the edge',
     description: 'One API call. Instant PNG. Cached globally on Cloudflare CDN.',
     image: `https://${host}/demo-og`,
   });
@@ -827,7 +827,7 @@ export function dashboardPage(key: ApiKey, recentCount: number, host: string): s
             key.tier === 'free'
               ? `<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
                    <p style="font-size:13px;color:var(--text-2);">Need higher limits?</p>
-                   <a href="mailto:ekachai.w@gmail.com?subject=SnapOG%20Pro%20waitlist" class="btn btn-primary" style="margin-top:10px;">Join Pro waitlist →</a>
+                   <a href="mailto:ekachai.w@gmail.com?subject=Imog%20Pro%20waitlist" class="btn btn-primary" style="margin-top:10px;">Join Pro waitlist →</a>
                    <p style="font-size:12px;color:var(--text-3);margin-top:10px;">Paid billing launches soon.</p>
                  </div>`
               : ''
@@ -984,7 +984,7 @@ export function playgroundPage(host: string): string {
       const PRESETS = {
         launch: { title: 'Meet Lumen 2.0', description: 'The fastest way to ship beautiful product updates.', domain: 'lumen.app', author: 'Lumen Team', tag: 'Launch', template: 'default', theme: 'dark' },
         blog:   { title: 'Why we rewrote our API in three weeks', description: 'Lessons from a clean-slate rewrite.', domain: 'indieblog.dev', author: 'Sam Builder', tag: 'Engineering', template: 'blog', theme: 'dark' },
-        docs:   { title: 'Getting Started with SnapOG', description: 'Generate your first OG image in 60 seconds.', domain: 'snapog.dev', author: '', tag: 'Docs', template: 'article', theme: 'light' },
+        docs:   { title: 'Getting Started with Imog', description: 'Generate your first OG image in 60 seconds.', domain: 'snapog.dev', author: '', tag: 'Docs', template: 'article', theme: 'light' },
       };
       const DEFAULTS = PRESETS.launch;
 
@@ -1080,7 +1080,7 @@ export function playgroundPage(host: string): string {
   const head = ogMeta({
     host,
     path: '/play',
-    title: 'SnapOG Playground — design OG images live',
+    title: 'Imog Playground — design OG images live',
     description:
       'Tweak the fields, watch it render live at the edge, copy the shareable URL. No signup, no key.',
     image: `https://${host}/preview?${playCardParams}`,
@@ -1106,7 +1106,7 @@ type Preset = {
 const GALLERY_PRESETS: Preset[] = [
   { title: 'Meet Lumen 2.0', description: 'The fastest way to ship product updates.', domain: 'lumen.app', author: 'Lumen Team', tag: 'Launch', template: 'default', theme: 'dark' },
   { title: 'Why we rewrote our API in three weeks', description: 'Lessons from a clean-slate rewrite.', domain: 'indieblog.dev', author: 'Sam Builder', tag: 'Engineering', template: 'blog', theme: 'dark' },
-  { title: 'Getting Started with SnapOG', description: 'Your first OG image in 60 seconds.', domain: 'snapog.dev', tag: 'Docs', template: 'article', theme: 'light' },
+  { title: 'Getting Started with Imog', description: 'Your first OG image in 60 seconds.', domain: 'snapog.dev', tag: 'Docs', template: 'article', theme: 'light' },
   { title: 'v2.0 — Edge caching is live', description: 'Images now served from 300+ edge locations.', domain: 'snapog.dev', tag: 'Changelog', template: 'default', theme: 'dark' },
   { title: 'The Edge — Episode 42', description: 'Shipping at the edge with Kelsey Hightower.', domain: 'theedge.fm', author: 'Dev Radio', tag: 'Podcast', template: 'blog', theme: 'dark' },
   { title: 'How Acme cut page TTI by 40%', description: 'A six-week edge migration story.', domain: 'acme.io', author: 'Case Study', tag: 'Customers', template: 'article', theme: 'light' },
@@ -1246,12 +1246,205 @@ export function galleryPage(host: string): string {
   const head = ogMeta({
     host,
     path: '/gallery',
-    title: 'SnapOG Gallery — real, live-rendered OG images',
+    title: 'Imog Gallery — real, live-rendered OG images',
     description: 'A wall of OG image presets — every card is a live edge render. Open any design in the playground.',
     image: `https://${host}/preview?${presetQuery(GALLERY_PRESETS[0])}`,
   }) + galleryCss;
 
   return layout('Gallery', body, head);
+}
+
+// ── PlaceholdOG landing ───────────────────────────────────────────────────────
+// Sibling product on the same worker. Carbon Terminal tokens (no forked design
+// language — cohesive with /, /play, /gallery). The page is itself dogfood: every
+// preview <img> is a live /p/... render, and the share card (og:image) is too.
+// Distribution thesis: this page exists so the embed-URL channel has a crawlable,
+// copy-pasteable entry point — the "gallery hook" that made /gallery convert.
+type PhPreset = { dims: string; text: string; bg: string; fg: string; note?: string };
+
+const PH_PRESETS: PhPreset[] = [
+  { dims: '1200x630', text: 'OG cover · 1200×630', bg: 'indigo', fg: 'white', note: 'Social card' },
+  { dims: '600x400',  text: 'Card thumb',          bg: 'slate',  fg: 'white', note: 'Listings' },
+  { dims: '400x400',  text: 'Avatar',              bg: 'emerald',fg: 'white', note: 'Profile' },
+  { dims: '800x200',  text: 'Banner 800×200',      bg: 'amber',  fg: 'black', note: 'Hero strip' },
+  { dims: '300x250',  text: 'Ad 300×250',          bg: 'rose',   fg: 'white', note: 'Mid rectangle' },
+  { dims: '1280x720', text: '16:9 cover',          bg: 'blue',   fg: 'white', note: 'Video thumb' },
+  { dims: '728x90',   text: 'Leaderboard 728×90',  bg: '#0f172a',fg: '#fbbf24', note: 'Wide ad' },
+  { dims: '200x200',  text: 'icon',                bg: 'black',  fg: 'white', note: 'Square' },
+];
+
+function phUrl(host: string, p: PhPreset, svg = false): string {
+  const q = new URLSearchParams({ text: p.text, bg: p.bg, fg: p.fg });
+  return `https://${host}/p/${p.dims}${svg ? '.svg' : ''}?${q}`;
+}
+
+export function placeholderLandingPage(host: string): string {
+  const heroUrl = phUrl(host, { dims: '1200x400', text: 'PlaceholdOG — URL is the API', bg: 'indigo', fg: 'white' });
+
+  const cells = PH_PRESETS.map((p, i) => {
+    const url = phUrl(host, p);
+    return `
+      <div class="ph-cell" style="--i:${i}">
+        <div class="ph-thumb"><img loading="lazy" src="/p/${p.dims}?${new URLSearchParams({ text: p.text, bg: p.bg, fg: p.fg })}" alt="${p.text}" /></div>
+        <div class="ph-body">
+          <code class="ph-dims">/p/${p.dims}</code>
+          <span class="ph-note">${p.note}</span>
+        </div>
+        <button class="ph-copy" type="button" data-url="${url}" aria-label="Copy embed URL for ${p.dims}">Copy URL</button>
+      </div>`;
+  }).join('');
+
+  const body = `
+  ${nav('/p')}
+
+  <section class="hero" style="padding-bottom:48px;">
+    <div class="container">
+      <div class="hero-eyebrow">Placeholder Images · Keyless · Free</div>
+      <h1>Drop in a URL.<br/><em>Get a placeholder.</em></h1>
+      <p class="hero-sub">
+        No key, no signup, no SDK. Just <code style="font-family:var(--font-mono);color:var(--accent);">/p/600x400</code> —
+        PNG or crisp SVG, rendered at the Cloudflare edge, cached globally. The URL <em>is</em> the API.
+      </p>
+      <div class="hero-cta">
+        <a href="#presets" class="btn btn-primary" style="font-size:15px;padding:12px 28px;">Copy a preset →</a>
+        <a href="/play" class="btn btn-ghost" style="font-size:15px;padding:12px 28px;">Try SnapOG (OG images)</a>
+      </div>
+
+      <div class="og-preview-wrap" style="margin-top:56px;">
+        <div class="og-preview-label">live render — /p/1200x400</div>
+        <img src="${heroUrl}" alt="PlaceholdOG live render" style="width:100%;border-radius:8px;" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Syntax -->
+  <section class="section" id="how" style="padding-top:40px;">
+    <div class="container">
+      <p class="section-title">Embed Syntax</p>
+      <h2 class="section-h2">One path. Two formats.</h2>
+      <p class="section-sub">PNG by default. Append <code style="font-family:var(--font-mono);color:var(--accent);">.svg</code> for a scalable vector that stays crisp at any size.</p>
+
+      <div class="code-block" style="margin-top:32px;">
+        <div class="code-block-header">
+          <div class="code-block-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+          <span class="code-block-lang">HTML · markdown</span>
+        </div>
+<pre><span class="c-comment">&lt;!-- PNG (default) --&gt;</span>
+<span class="c-key">&lt;img</span> <span class="c-val">src=</span><span class="c-str">"https://${host}/p/600x400?text=Hello&amp;bg=indigo&amp;fg=white"</span> <span class="c-key">/&gt;</span>
+
+<span class="c-comment">&lt;!-- SVG — crisp at any size --&gt;</span>
+<span class="c-key">&lt;img</span> <span class="c-val">src=</span><span class="c-str">"https://${host}/p/600x400.svg?text=Hello&amp;bg=indigo"</span> <span class="c-key">/&gt;</span>
+
+<span class="c-comment">![alt](https://${host}/p/800x200?text=Banner&amp;bg=amber&amp;fg=black)</span></pre>
+      </div>
+
+      <h3 style="font-size:18px;font-weight:600;margin:48px 0 0;letter-spacing:-0.01em;">Parameters</h3>
+      <table class="params-table">
+        <thead><tr><th>Param</th><th>Example</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>dims</td><td><code>600x400</code> · <code>200</code></td><td><span class="required">required</span></td><td>Path segment. <code>WxH</code> or <code>N</code> (square). Quantized ×10, clamped [40,2000].</td></tr>
+          <tr><td>format</td><td><code>.png</code> · <code>.svg</code></td><td><span class="optional">optional</span></td><td>Suffix or <code>/png</code>·<code>/svg</code> segment. Default <code>png</code>.</td></tr>
+          <tr><td>text</td><td><code>Hello</code></td><td><span class="optional">optional</span></td><td>Label text (max 60). Defaults to <code>W×H</code>.</td></tr>
+          <tr><td>bg</td><td><code>indigo</code> · <code>#0f172a</code></td><td><span class="optional">optional</span></td><td>Background. Named: indigo, slate, emerald, amber, rose, white, black, blue — or hex.</td></tr>
+          <tr><td>fg</td><td><code>white</code> · <code>#fbbf24</code></td><td><span class="optional">optional</span></td><td>Text color. Same palette as <code>bg</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Presets -->
+  <section class="section" id="presets" style="padding-top:0;">
+    <div class="container-wide">
+      <p class="section-title">Live Presets</p>
+      <h2 class="section-h2">Every image below is a real render.</h2>
+      <p class="section-sub">Tap copy and paste into your HTML or README. Swap <code style="font-family:var(--font-mono);color:var(--accent);">.png</code> for <code style="font-family:var(--font-mono);color:var(--accent);">.svg</code> on any of them.</p>
+      <div class="ph-grid">${cells}</div>
+    </div>
+  </section>
+
+  <!-- Why -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">🔓</span>
+          <h3>No key, no signup</h3>
+          <p>Placeholders are keyless by design. The URL works the first time, every time — nothing to register.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📐</span>
+          <h3>SVG that stays crisp</h3>
+          <p>Vector output scales without pixelation — drop the same URL into a 64px avatar and a 4K hero.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <h3>Edge-cached</h3>
+          <p>Rendered once, cached globally on Cloudflare. Subsequent hits return from the nearest edge POP.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🆓</span>
+          <h3>Free + watermarked</h3>
+          <p>Small “PlaceholdOG” label in the corner. Stripe-paid watermark removal ships once embed traction is real.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  ${footer()}
+
+  <script>
+  (function () {
+    document.querySelectorAll('.ph-copy').forEach(function (b) {
+      b.addEventListener('click', async function (e) {
+        e.preventDefault();
+        try { await navigator.clipboard.writeText(b.dataset.url); } catch (_) {}
+        var prev = b.textContent; b.textContent = 'Copied!'; b.classList.add('copied');
+        setTimeout(function () { b.textContent = prev; b.classList.remove('copied'); }, 1400);
+      });
+    });
+  })();
+  </script>`;
+
+  // Scoped CSS — extends the shared token set, no new design language.
+  const phCss = `<style>
+    .ph-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-top: 36px; }
+    .ph-cell {
+      position: relative; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 14px; display: flex; flex-direction: column; gap: 12px;
+      opacity: 0; animation: gfade 0.5s ease forwards; animation-delay: calc(var(--i) * 50ms);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .ph-cell:hover { border-color: var(--accent-dim); transform: translateY(-3px); }
+    .ph-thumb {
+      background: #000; border-radius: var(--r); overflow: hidden; min-height: 120px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ph-thumb img { max-width: 100%; max-height: 180px; width: auto; height: auto; display: block; }
+    .ph-body { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .ph-dims { font-family: var(--font-mono); font-size: 13px; color: var(--accent); letter-spacing: 0.02em; }
+    .ph-note { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+    .ph-copy {
+      align-self: stretch; min-height: 44px; padding: 0 16px;
+      font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--text-1);
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--r);
+      cursor: pointer; transition: all 0.15s ease;
+    }
+    .ph-copy:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+    .ph-copy.copied { background: var(--teal); color: #04121a; border-color: var(--teal); }
+    .ph-copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    @keyframes gfade { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .ph-cell { animation: none; opacity: 1; } .ph-cell:hover { transform: none; } }
+  </style>`;
+
+  const head = ogMeta({
+    host,
+    path: '/p',
+    title: 'PlaceholdOG — placeholder images, URL is the API',
+    description: 'Keyless placeholder images. /p/600x400 — PNG or crisp SVG, rendered at the edge. No signup.',
+    image: heroUrl,
+  }) + phCss;
+
+  return layout('PlaceholdOG — placeholder images', body, head);
 }
 
 export function errorPage(code: number, message: string): string {
