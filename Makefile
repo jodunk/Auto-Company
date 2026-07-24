@@ -93,6 +93,13 @@ team: ## Start selected engine interactive session (ENGINE=claude|codex)
 	fi; \
 	cd "$(CURDIR)" && "$$engine"
 
+# === Scaffolding ===
+
+new: ## Scaffold new product: make new NAME=<name> TEMPLATE=<api-backend|saas|docs-site>
+	@test -n "$(NAME)" || { echo "Usage: make new NAME=<name> TEMPLATE=<api-backend|saas|docs-site>"; exit 1; }
+	@test -n "$(TEMPLATE)" || { echo "TEMPLATE required: api-backend | saas | docs-site"; exit 1; }
+	./scripts/scaffold.sh "$(NAME)" "$(TEMPLATE)"
+
 # === Maintenance ===
 
 clean-logs: ## Remove all cycle logs
